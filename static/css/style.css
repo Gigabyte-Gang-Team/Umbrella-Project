@@ -1,0 +1,44 @@
+:root {
+    --warna-utama: #64DBFB;
+}
+
+body {
+    font-family: "Poppins", sans-serif;
+}
+
+.navbar-nav {
+    font-weight: 500;
+    font-size: 18px;
+}
+
+.nav-link.active {
+    font-weight: 700;
+}
+
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.user-text {
+    font-size: 16px;
+    font-weight: 400;
+    color: #000000;
+    margin-right: 10px;
+    margin-left: 30px;
+}
+
+.vertical-line {
+    width: 1.5px;
+    height: 30px;
+    background-color: #000;
+    margin-left: 18px;
+    border-radius: 2px;
+}
+
+.navbar .dropdown-menu {
+    right: 0;
+    left: auto;
+    text-align: left;
+}
