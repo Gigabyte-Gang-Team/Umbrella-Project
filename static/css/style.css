@@ -1,11 +1,13 @@
 :root {
     --warna-utama: #64DBFB;
+    --warna-biru-tua: #0587AA;
 }
 
 body {
     font-family: "Poppins", sans-serif;
 }
 
+/* Navbar Style*/
 .navbar-nav {
     font-weight: 500;
     font-size: 18px;
@@ -41,4 +43,60 @@ body {
     right: 0;
     left: auto;
     text-align: left;
+}
+
+/* Hero Section */
+.main-content {
+    background-color: var(--warna-utama);
+    border-radius: 24px;
+    padding: 40px;
+}
+
+.hero-tagline h1 {
+    font-weight: 800;
+    font-size: 64px;
+    width: 546px;
+    line-height: 75px;
+}
+
+.hero-tagline p {
+    font-weight: 400;
+    font-size: 20px;
+    width: 620px;
+    margin-top: 20px;
+    margin-bottom: 40px;
+}
+
+.best-selling {
+    padding: 80px;
+}
+
+.best-selling-tagline h2{
+    font-size: 35px;
+    font-weight: 600;
+}
+
+.best-selling-tagline p{
+    color: #474443;
+    font-size: 20px;
+    font-weight: 400;
+    text-align: justify;
+}
+
+.product-card {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 15px;
+    text-align: center;
+    transition: transform 0.3s;
+}
+
+.product-card img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
+.product-card:hover {
+    transform: scale(1.05);
 }
