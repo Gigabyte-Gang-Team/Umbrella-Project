@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../static/css/style.css">
+    <!-- Font Google -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700;1,800&display=swap"
+        rel="stylesheet">
+
+    <!-- Logo Title -->
+    <link rel="icon" href="../static/img/Logo.png">
+
+    <title>Umbrella Project</title>
+</head>
+
+<body>
+    {% include "header.html" %}
+    <section class="about-us">
+        <div class="container pt-5">
+            <div class="row" style="position: relative;">
+                <div class="col-md-8 about-us-tagline text-center my-auto">
+                    <h1 class="mb-4"
+                        style="color: var(--warna-utama); font-weight: 700; font-size: 58px; text-shadow: 0 4px 4px rgba(0, 0, 0, 0.5);">
+                        Umbrella Project</h1>
+                    <p style="font-weight: 500; font-size: 20px; color: #474443;">Umbrella Project Electronics Store is
+                        a leading online store that focuses on selling various kinds of high-quality electronic
+                        equipment. Established in 2022, we have grown to become one of the most trusted and popular
+                        electronic shopping destinations in Indonesia. With a strong commitment to innovation and
+                        customer satisfaction, we are determined to provide the best products that meet your modern
+                        technology needs.</p>
+                </div>
+                <div class="col-md-4 ms-auto">
+                    <img src="../static/img/Logo.png" alt="" width="380">
+                </div>
+                <img src="../static/img/earth.png" alt="" width="100%" style="position: absolute; z-index: -1;">
+            </div>
+            <div class="row text-center mt-5 justify-content-center">
+                <div class="col-md-2">
+                    <h2 style="color: var(--warna-utama); font-weight: 700; font-size: 48px;">1 Years</h2>
+                    <p style="font-size: 20px;">in bisnis</p>
+                </div>
+                <div class="col-md-1">
+                    <img src="../static/img/img-line.png" alt="">
+                </div>
+                <div class="col-md-2">
+                    <h2 style="color: var(--warna-utama); font-weight: 700; font-size: 48px;">1,000+</h2>
+                    <p style="font-size: 20px;">customers</p>
+                </div>
+                <div class="col-md-1">
+                    <img src="../static/img/img-line.png" alt="">
+                </div>
+                <div class="col-md-2">
+                    <h2 style="color: var(--warna-utama); font-weight: 700; font-size: 48px;">1K+</h2>
+                    <p style="font-size: 20px;">social followers</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="contact p-4 mt-5">
+        <div class="continer p-4"></div>
+        <div class="container"
+            style="background-color: var(--warna-utama); border-radius: 24px; display: flex; justify-content: center; align-items: center;">
+            <div class="container pb-5" style="max-width: 1000px; width: 80%;">
+                <div class="contact-section">
+                    <h2>Get In Touch</h2>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5 class="mb-4">Leave us a message</h5>
+                            <form>
+                                <div class="form-group">
+                                    <label for="name">Name</label>
+                                    <input type="text" class="form-control" id="name" placeholder="Your name">
+                                </div>
+                                <div class="form-group">
+                                    <label for="email">Email Address</label>
+                                    <input type="email" class="form-control" id="email" placeholder="Email Address">
+                                </div>
+                                <div class="form-group">
+                                    <label for="message">Your Message</label>
+                                    <textarea class="form-control" id="message" rows="4"
+                                        placeholder="Your Message"></textarea>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-block">Send</button>
+                            </form>
+                        </div>
+                        <div class="col-md-6 contact-info">
+                            <h5>Contact Information :</h5>
+                            <p><i class="bi bi-geo-alt"></i> Jl. Letjen S. Parman 87G, Wirobrajan, Patangpuluhan,
+                                Yogyakarta</p>
+                            <p><i class="bi bi-telephone"></i> +62 895-3608-91719</p>
+                            <p><i class="bi bi-envelope"></i> UmbrellaProject@gmail.com</p>
+                            <iframe class="map"
+                                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3952.819411582264!2d110.34817837484451!3d-7.808933292211503!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7a57b99288239d%3A0xe293ebb45440e6ec!2sJl.%20Letjen%20S.Parman%20No.87%2C%20Patangpuluhan%2C%20Wirobrajan%2C%20Kota%20Yogyakarta%2C%20Daerah%20Istimewa%20Yogyakarta%2055251%2C%20Indonesia!5e0!3m2!1sid!2skr!4v1717600795582!5m2!1sid!2skr"
+                                width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy"
+                                referrerpolicy="no-referrer-when-downgrade"></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {% include "footer.html" %}
+</body>
+
+</html>
