@@ -71,12 +71,12 @@ body {
     padding: 80px;
 }
 
-.best-selling-tagline h2{
+.best-selling-tagline h2 {
     font-size: 35px;
     font-weight: 600;
 }
 
-.best-selling-tagline p{
+.best-selling-tagline p {
     color: #474443;
     font-size: 20px;
     font-weight: 400;
@@ -99,6 +99,48 @@ body {
 
 .product-card:hover {
     transform: scale(1.05);
+}
+
+/* About Section */
+.contact-section {
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: 50px;
+}
+
+.contact-section h2 {
+    color: #0288d1;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.contact-section .form-group{
+    margin-bottom: 20px;
+}
+
+.contact-section .form-group label {
+    font-weight: bold;
+}
+
+.contact-info {
+    margin-top: 20px;
+}
+
+.contact-info h5 {
+    font-weight: bold;
+}
+
+.contact-info p {
+    margin-bottom: 10px;
+}
+
+.map {
+    border: 0;
+    width: 100%;
+    height: 300px;
+    border-radius: 8px;
 }
 
 /* login/register */
@@ -158,4 +200,3 @@ body {
 
 .input-group-text {
     cursor: pointer;
-}
