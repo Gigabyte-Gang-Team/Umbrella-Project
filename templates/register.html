@@ -13,10 +13,48 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet" />
     <!-- Font Awesome for eye icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <!-- jquery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
     <!-- Logo Title -->
     <link rel="icon" href="../static/img/Logo.png" />
 
     <title>Umbrella Project | Login User</title>
+    <script>
+      //fungsi eye pw
+      function togglePassword(fieldId, iconId) {
+        const field = document.getElementById(fieldId);
+        const icon = document.getElementById(iconId);
+        if (field && icon) {
+            const isPassword = field.type === 'password';
+            field.type = isPassword ? 'text' : 'password';
+            icon.classList.toggle('fa-eye', !isPassword);
+            icon.classList.toggle('fa-eye-slash', isPassword);
+        }
+      }
+      //fungsi hide image section
+      $(document).ready(function() {
+        let imageSection = $('.image-section').detach();  
+    
+        function toggleImageSection() {
+            if ($(window).width() <= 767) {
+                if ($('.image-section').length > 0) {
+                    imageSection = $('.image-section').detach();  
+                }
+            } else {
+                if ($('.image-section').length === 0) {
+                    $('.row.no-gutters').prepend(imageSection);  
+                }
+            }
+        }
+        toggleImageSection();
+    
+        $(window).resize(function() {
+            toggleImageSection();
+        });
+    });
+
+    </script>
   </head>
   <body>
     <div class="container-fluid">
@@ -68,17 +106,5 @@
         </div>
       </div>
     </div>
-    <script>
-      function togglePassword(fieldId, iconId) {
-        const field = document.getElementById(fieldId);
-        const icon = document.getElementById(iconId);
-        if (field && icon) {
-            const isPassword = field.type === 'password';
-            field.type = isPassword ? 'text' : 'password';
-            icon.classList.toggle('fa-eye', !isPassword);
-            icon.classList.toggle('fa-eye-slash', isPassword);
-        }
-      }
-    </script>
   </body>
 </html>
