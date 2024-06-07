@@ -154,14 +154,12 @@ body {
 
 .image-section {
     background-image: url('../img/side-login.png');
-    background-size: contain;
-    background-position: center;
+    background-size: cover;
 }
 
 .image-section-admin {
     background-image: url('../img/admin-side-login.png');
-    background-size: contain;
-    background-position: center;
+    background-size: cover;
 }
 
 .form-section {
