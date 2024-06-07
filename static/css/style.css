@@ -158,6 +158,12 @@ body {
     background-position: center;
 }
 
+.image-section-admin {
+    background-image: url('../img/admin-side-login.png');
+    background-size: contain;
+    background-position: center;
+}
+
 .form-section {
     display: flex;
     justify-content: center;

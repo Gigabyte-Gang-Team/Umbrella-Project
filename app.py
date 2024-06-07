@@ -59,6 +59,15 @@ def cart():
 def update():
     return render_template('update-profile.html')
 
+## admin side
+@app.route('/login-admin')
+def loginAdmin():
+    return render_template('adm-login.html')
+
+@app.route('/register-admin')
+def registerAdmin():
+    return render_template('adm-register.html')
+
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
