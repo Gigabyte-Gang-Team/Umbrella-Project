@@ -19,5 +19,18 @@ def login():
 def register():
     return render_template('register.html')
 
+@app.route('/products')
+def index():
+    return render_template("products.html")
+
+@app.route('/all-products')
+def all_products():
+    return render_template("all-products.html")
+
+@app.route('/detail-product')
+def detail_product():
+    return render_template("detail-product.html")
+
+
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
