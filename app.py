@@ -19,13 +19,6 @@ def login():
 def register():
     return render_template('register.html')
 
-@app.route('/purchase')
-def purchase():
-    return render_template('purchase.html')
-
-@app.route('/cart')
-def cart():
-    return render_template('cart.html')
 @app.route('/products')
 def index():
     return render_template("products.html")
@@ -38,6 +31,13 @@ def all_products():
 def detail_product():
     return render_template("detail-product.html")
 
+@app.route('/purchase')
+def purchase():
+    return render_template('purchase.html')
+
+@app.route('/cart')
+def cart():
+    return render_template('cart.html')
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
