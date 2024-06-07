@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Products - Umbrella Project</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="" name="Umbrella Project">
+    <meta content="" name="Selling all the electronic products">
+
+    <!-- Logo Icon -->
+    <link rel="icon" href="../static/img/Logo.png">
+
+    <!-- Font Style - Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <!-- Template Stylesheet -->
+    <link href="../static/css/style.css" rel="stylesheet">
+</head>
+
+<body>
+    
+    {% include "header.html" %}
+
+    <!-- Banner Top Start -->
+
+    <section class="banner">
+        <div class="row banner-row">
+            <div class="img-banner col-md-4">
+                <img src="../static/img/img-banner.png" alt="img-banner">
+            </div>
+            <div class="col-md-6 tagline-banner">
+                <h2 style="color: #73A336;">Our New Product</h2>
+                <h2>The Ordinary</h2>
+                <h3 class="text-secondary mt-4">The Ordinary is your destination for Skincare, Makeup, Hair, and Body
+                    solutions. Discover clinical formulations with integrity.</h3>
+                <button class="btn btn-check-product fw-bold mt-4 fs-5 text-white" onclick="window.location.href = '/detail-product'">Check Product<i
+                        class="fas fa-arrow-right px-2"></i></button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Banner Top End -->
+
+
+    <!-- Products Start -->
+    <div class="container-fluid prod py-5">
+        <div class="container py-5">
+            <div class="row g-4">
+                <!-- Products Body Start -->
+                <div class="col-lg-12">
+                    <div class="row g-4">
+                        <div class="col-xl-3 d-flex">
+                            <div class="ps-3 py-3 rounded d-flex justify-content-between mb-4">
+                                <h4 class="fs-3">Products</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row g-4">
+                        <div class="col-15">
+                            <div class="row g-4 justify-content-center">
+                                <div class="col-md-2 col-lg-2 col-xl-3">
+                                    <div class="position-relative prod-item"
+                                        onclick="window.location.href = '/detail-product'" style="cursor: pointer;">
+                                        <div class="prod-img">
+                                            <img src="../static/img/fruite-item-5.jpg" class="img-fluid w-100" alt="">
+                                        </div>
+                                        <div class="card-head-price p-4">
+                                            <h6>Grapes</h6>
+                                            <div class="d-flex justify-content-between flex-lg-wrap">
+                                                <p class="fs-5 fw-bold mb-0">Rp. 999</p>
+                                                <a href="#"
+                                                    class="btn border border-secondary rounded-pill px-3 mt-1"><i
+                                                        class="fa fa-shopping-bag"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-lg-2 col-xl-3">
+                                    <div class="position-relative prod-item"
+                                        onclick="window.location.href = '/detail-product'" style="cursor: pointer;">
+                                        <div class="prod-img">
+                                            <img src="../static/img/fruite-item-5.jpg" class="img-fluid w-100" alt="">
+                                        </div>
+                                        <div class="card-head-price p-4">
+                                            <h6>Grapes</h6>
+                                            <div class="d-flex justify-content-between flex-lg-wrap">
+                                                <p class="fs-5 fw-bold mb-0">Rp. 999</p>
+                                                <a href="#"
+                                                    class="btn border border-secondary rounded-pill px-3 mt-1"><i
+                                                        class="fa fa-shopping-bag"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-lg-2 col-xl-3">
+                                    <div class="position-relative prod-item"
+                                        onclick="window.location.href = '/detail-product'" style="cursor: pointer;">
+                                        <div class="prod-img">
+                                            <img src="../static/img/fruite-item-5.jpg" class="img-fluid w-100" alt="">
+                                        </div>
+                                        <div class="card-head-price p-4">
+                                            <h6>Grapes</h6>
+                                            <div class="d-flex justify-content-between flex-lg-wrap">
+                                                <p class="fs-5 fw-bold mb-0">Rp. 999</p>
+                                                <a href="#"
+                                                    class="btn border border-secondary rounded-pill px-3 mt-1"><i
+                                                        class="fa fa-shopping-bag"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-lg-2 col-xl-3">
+                                    <div class="position-relative prod-item"
+                                        onclick="window.location.href = '/detail-product'" style="cursor: pointer;">
+                                        <div class="prod-img">
+                                            <img src="../static/img/fruite-item-5.jpg" class="img-fluid w-100" alt="">
+                                        </div>
+                                        <div class="card-head-price p-4">
+                                            <h6>Grapes</h6>
+                                            <div class="d-flex justify-content-between flex-lg-wrap">
+                                                <p class="fs-5 fw-bold mb-0">Rp. 999</p>
+                                                <a href="" class="btn border border-secondary rounded-pill px-3 mt-1"><i
+                                                        class="fa fa-shopping-bag"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-lg-2 col-xl-3">
+                                    <div class="position-relative prod-item"
+                                        onclick="window.location.href = '/detail-product'" style="cursor: pointer;">
+                                        <div class="prod-img">
+                                            <img src="../static/img/fruite-item-1.jpg" class="img-fluid w-100" alt="">
+                                        </div>
+                                        <div class="card-head-price p-4">
+                                            <h6>Orange</h6>
+                                            <div class="d-flex justify-content-between flex-lg-wrap">
+                                                <p class="fs-5 fw-bold mb-0">Rp. 999</p>
+                                                <a href="#"
+                                                    class="btn border border-secondary rounded-pill px-3 mt-1"><i
+                                                        class="fa fa-shopping-bag"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-lg-2 col-xl-3">
+                                    <div class="position-relative prod-item"
+                                        onclick="window.location.href = '/detail-product'" style="cursor: pointer;">
+                                        <div class="prod-img">
+                                            <img src="../static/img/fruite-item-1.jpg" class="img-fluid w-100" alt="">
+                                        </div>
+                                        <div class="card-head-price p-4">
+                                            <h6>Orange</h6>
+                                            <div class="d-flex justify-content-between flex-lg-wrap">
+                                                <p class="fs-5 fw-bold mb-0">Rp. 999</p>
+                                                <a href="#"
+                                                    class="btn border border-secondary rounded-pill px-3 mt-1"><i
+                                                        class="fa fa-shopping-bag"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-lg-2 col-xl-3">
+                                    <div class="position-relative prod-item"
+                                        onclick="window.location.href = '/detail-product'" style="cursor: pointer;">
+                                        <div class="prod-img">
+                                            <img src="../static/img/fruite-item-1.jpg" class="img-fluid w-100" alt="">
+                                        </div>
+                                        <div class="card-head-price p-4">
+                                            <h6>Orange</h6>
+                                            <div class="d-flex justify-content-between flex-lg-wrap">
+                                                <p class="fs-5 fw-bold mb-0">Rp. 999</p>
+                                                <a href="#"
+                                                    class="btn border border-secondary rounded-pill px-3 mt-1"><i
+                                                        class="fa fa-shopping-bag"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-lg-2 col-xl-3">
+                                    <div class="position-relative prod-item"
+                                        onclick="window.location.href = '/detail-product'" style="cursor: pointer;">
+                                        <div class="prod-img">
+                                            <img src="../static/img/fruite-item-1.jpg" class="img-fluid w-100" alt="">
+                                        </div>
+                                        <div class="card-head-price p-4">
+                                            <h6>Orange</h6>
+                                            <div class="d-flex justify-content-between flex-lg-wrap">
+                                                <p class="fs-5 fw-bold mb-0">Rp. 999</p>
+                                                <a href="#"
+                                                    class="btn border border-secondary rounded-pill px-3 mt-1"><i
+                                                        class="fa fa-shopping-bag"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button onclick="window.location.href = '/all-products'"
+                                    class="btn-all-products rounded mt-5 col-md-2 col-lg-2 col-xl-2 p-2 fw-bold">View
+                                    All Products</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Products Body Start -->
+
+                <!-- Best Selling Body Start -->
+                <div class="col-lg-12">
+                    <div class="row g-4">
+                        <div class="col-xl-3">
+                            <div class="ps-3 py-3 rounded d-flex justify-content-between mb-4">
+                                <h4 class="fs-3">Best Selling Products</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row g-4">
+                        <div class="col-15">
+                            <div class="row g-4 justify-content-center">
+                                <div class="col-md-2 col-lg-2 col-xl-3">
+                                    <div class="position-relative prod-item" onclick="window.location.href = '/detail-product'"
+                                        style="cursor: pointer;">
+                                        <div class="prod-img">
+                                            <img src="../static/img/fruite-item-5.jpg" class="img-fluid w-100" alt="">
+                                        </div>
+                                        <div class="card-head-price p-4">
+                                            <h6>Grapes</h6>
+                                            <div class="d-flex justify-content-between flex-lg-wrap">
+                                                <p class="fs-5 fw-bold mb-0">Rp. 999</p>
+                                                <a href="#"
+                                                    class="btn border border-secondary rounded-pill px-3 mt-1"><i
+                                                        class="fa fa-shopping-bag"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-lg-2 col-xl-3">
+                                    <div class="position-relative prod-item" onclick="window.location.href = '/detail-product'"
+                                        style="cursor: pointer;">
+                                        <div class="prod-img">
+                                            <img src="../static/img/fruite-item-1.jpg" class="img-fluid w-100" alt="">
+                                        </div>
+                                        <div class="card-head-price p-4">
+                                            <h6>Orange</h6>
+                                            <div class="d-flex justify-content-between flex-lg-wrap">
+                                                <p class="fs-5 fw-bold mb-0">Rp. 999</p>
+                                                <a href="#"
+                                                    class="btn border border-secondary rounded-pill px-3 mt-1"><i
+                                                        class="fa fa-shopping-bag"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-lg-2 col-xl-3">
+                                    <div class="position-relative prod-item" onclick="window.location.href = '/detail-product'"
+                                        style="cursor: pointer;">
+                                        <div class="prod-img">
+                                            <img src="../static/img/fruite-item-3.jpg" class="img-fluid w-100" alt="">
+                                        </div>
+                                        <div class="card-head-price p-4">
+                                            <h6>Banana</h6>
+                                            <div class="d-flex justify-content-between flex-lg-wrap">
+                                                <p class="fs-5 fw-bold mb-0">Rp. 999</p>
+                                                <a href="#"
+                                                    class="btn border border-secondary rounded-pill px-3 mt-1"><i
+                                                        class="fa fa-shopping-bag"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-2 col-lg-2 col-xl-3">
+                                    <div class="position-relative prod-item" onclick="window.location.href = '/detail-product'"
+                                        style="cursor: pointer;">
+                                        <div class="prod-img">
+                                            <img src="../static/img/fruite-item-6.jpg" class="img-fluid w-100" alt="">
+                                        </div>
+                                        <div class="card-head-price p-4">
+                                            <h6>Apple</h6>
+                                            <div class="d-flex justify-content-between flex-lg-wrap">
+                                                <p class="fs-5 fw-bold mb-0">Rp. 999</p>
+                                                <a href="#"
+                                                    class="btn border border-secondary rounded-pill px-3 mt-1"><i
+                                                        class="fa fa-shopping-bag"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button onclick="window.location.href = '/all-products'"
+                                    class="btn-all-products rounded mt-5 col-md-2 col-lg-2 col-xl-2 p-2 fw-bold">View
+                                    All Products</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Best Selling Body End -->
+
+            </div>
+        </div>
+    </div>
+    <!-- Products End -->
+    {% include "footer.html" %}
+</body>
+
+</html>
