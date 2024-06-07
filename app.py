@@ -39,5 +39,10 @@ def purchase():
 def cart():
     return render_template('cart.html')
 
+@app.route('/update-profile')
+def update():
+    return render_template('update-profile.html')
+
+
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
