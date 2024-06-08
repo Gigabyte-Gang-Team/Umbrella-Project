@@ -8,18 +8,16 @@ body {
 }
 
 /* products, all-products, detail-product start */
-.btn {
+.btn-tagline {
     font-weight: 600;
-    transition: .5s;
-}
-
-.btn.border-secondary {
     transition: 0.5s;
     color: rgb(18, 197, 11);
     background: white;
+    width: auto;
+    height: auto;
 }
 
-.btn.border-secondary:hover {
+.btn-tagline:hover {
     background: #64DBFB ;
     color: white;
 }
