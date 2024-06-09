@@ -3,6 +3,7 @@ from pymongo import MongoClient
 import requests
 from datetime import datetime, timedelta
 import hashlib
+import re
 from bson import ObjectId
 from bson.objectid import ObjectId, InvalidId
 import jwt.exceptions
@@ -30,25 +31,9 @@ TOKEN_KEY = os.environ.get("TOKEN_KEY")
 
 app = Flask(__name__)
 
-# fungsi rquired untuk user yang sudah login agar bisa mengakses fungsi tertentu(pembayaran, keranjang, profil, dll)
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        token_receive = request.cookies.get(TOKEN_KEY)
-        if not token_receive:
-            return redirect(url_for('login'))
-        try:
-            payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-            user_info = db.users.find_one({'email': payload.get('id')})
-            if not user_info:
-                return redirect(url_for('login'))
-            return f(user_info, *args, **kwargs)
-        except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
-            return redirect(url_for('login'))
-    return decorated_function
-
-@app.route('/', methods=['GET'])
+@app.route('/', methods=['GET','POST'])
 def home():
+#   navbar profile
     token_receive = request.cookies.get(TOKEN_KEY)
     user_info = None
 
@@ -60,10 +45,28 @@ def home():
             pass
 
     is_logged_in = 'user_id' in session or user_info is not None
+#   navbar profile end
+    
+    best_products = db.products.find().sort('total_pembelian', -1).limit(3)
+    products = list(db.products.find({}))
+    unique_categories = {}
+    for product in products:
+        category = product['kategori_produk']
+        if category not in unique_categories:
+            unique_categories[category] = product
 
-    return render_template('home.html', is_logged_in=is_logged_in, user_info=user_info)
+    # Mengubah hasil menjadi daftar
+    kategori_produk = list(unique_categories.values())
+    
+    return render_template('home.html', best_products=best_products, kategori_produk=kategori_produk, is_logged_in=is_logged_in, user_info=user_info)
 
-
+@app.route('/search', methods=['GET'])
+def search():
+    query = request.args.get('query', '')
+    regex = re.compile(f".*{query}.*", re.IGNORECASE)
+    search_results_cursor = db.products.find({"nama_produk": regex})
+    search_results = list(search_results_cursor)
+    return render_template('search_results.html', products=search_results, query=query)
 
 @app.route('/login', methods=['GET'])
 def login():
