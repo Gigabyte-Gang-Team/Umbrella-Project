@@ -233,19 +233,17 @@ body {
 }
 
 /* products, all-products, detail-product start */
-.btn {
+.btn-tagline {
     font-weight: 600;
-    transition: .5s;
-}
-
-.btn.border-secondary {
     transition: 0.5s;
     color: rgb(18, 197, 11);
     background: white;
+    width: auto;
+    height: auto;
 }
 
-.btn.border-secondary:hover {
-    background: #64DBFB;
+.btn-tagline:hover {
+    background: #64DBFB ;
     color: white;
 }
 
@@ -261,7 +259,8 @@ body {
 .prod .prod-item .prod-img {
     overflow: hidden;
     transition: 0.5s;
-
+    object-fit: contain;
+    border: 1px solid black;
 }
 
 .prod .prod-item .prod-img img {
@@ -269,6 +268,8 @@ body {
 }
 
 .card-head-price {
+    height: 155px;
+    width: auto;
     background-color: #0587AA;
     color: white;
 }
@@ -278,6 +279,8 @@ body {
 }
 
 .btn-all-products {
+    width: 250px;
+    height: 50px;
     transition: 0.5s;
     border-color: #0587AA;
     border-radius: 1px;
@@ -293,12 +296,14 @@ body {
 
 .banner-row {
     background-color: var(--warna-utama);
+    width: auto;
 }
 
 .img-banner img {
-    width: auto;
-    height: auto;
+    width: 456px;
+    height: 360px;
     display: block;
+    object-fit: cover;
 }
 
 .tagline-banner {
@@ -316,11 +321,14 @@ body {
     transform: scale(1.05);
     transition: 0.5s;
     background-color: #73A336;
+    box-shadow: 0px 5px 8px rgb(57, 57, 57);
 }
 
 .carousel-container {
     background-color: var(--warna-utama);
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
+    height: 540px;
+    width: 540px;
 }
 
 .carousel-inner {
@@ -344,12 +352,13 @@ body {
     border-color: black;
     box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
     transition: 0.3s;
+    object-fit: cover;
 }
 
 .img-item:hover {
     box-shadow: 0px 10px 18px rgba(0, 0, 0, 0.5);
     transition: 0.3s;
-    transform: scale(1.05);
+    transform: scale(1.02);
 }
 
 .nav-pills {
@@ -393,6 +402,7 @@ body {
     border: 1px solid var(--warna-biru-tua);
     background-color: white;
     border-radius: 10px;
+    height: 482px;
 }
 
 .product-card-detail img {
@@ -427,4 +437,8 @@ body {
     box-shadow: 0px 5px 7px rgba(0, 0, 0, 0.5);
 }
 
+.input-group-note {
+    border: 1px solid black;
+    border-radius: 5px;
+}
 /* products, all-products, detail-product end */
