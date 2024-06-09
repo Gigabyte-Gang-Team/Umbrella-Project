@@ -1,4 +1,4 @@
-from flask import Flask, redirect, url_for, render_template, request, jsonify
+from flask import Flask, redirect, url_for, render_template, request, jsonify, make_response, session
 from pymongo import MongoClient
 import requests
 from datetime import datetime, timedelta
@@ -6,10 +6,16 @@ import hashlib
 import re
 from bson import ObjectId
 from bson.objectid import ObjectId, InvalidId
+import jwt.exceptions
+import jwt 
+from functools import wraps
+from werkzeug.utils import secure_filename
 
 import os
 from os.path import join, dirname
 from dotenv import load_dotenv
+
+import certifi
 
 dotenv_path = join(dirname(__file__), '.env')
 load_dotenv(dotenv_path)
@@ -17,15 +23,31 @@ load_dotenv(dotenv_path)
 MONGODB_URI = os.environ.get("MONGODB_URI")
 DB_NAME =  os.environ.get("DB_NAME")
 
-client = MongoClient(MONGODB_URI)
+client = MongoClient(MONGODB_URI, tlsCAFile=certifi.where())
 db = client[DB_NAME]
+
+SECRET_KEY = os.environ.get("SECRET_KEY")
+TOKEN_KEY = os.environ.get("TOKEN_KEY")
 
 app = Flask(__name__)
 
 @app.route('/', methods=['GET','POST'])
 def home():
-    best_products = db.products.find().sort('total_pembelian', -1).limit(3)
+#   navbar profile
+    token_receive = request.cookies.get(TOKEN_KEY)
+    user_info = None
+
+    if token_receive:
+        try:
+            payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+            user_info = db.users.find_one({'email': payload.get('id')})
+        except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+            pass
+
+    is_logged_in = 'user_id' in session or user_info is not None
+#   navbar profile end
     
+    best_products = db.products.find().sort('total_pembelian', -1).limit(3)
     products = list(db.products.find({}))
     unique_categories = {}
     for product in products:
@@ -36,7 +58,7 @@ def home():
     # Mengubah hasil menjadi daftar
     kategori_produk = list(unique_categories.values())
     
-    return render_template('home.html', best_products=best_products, kategori_produk=kategori_produk)
+    return render_template('home.html', best_products=best_products, kategori_produk=kategori_produk, is_logged_in=is_logged_in, user_info=user_info)
 
 @app.route('/search', methods=['GET'])
 def search():
@@ -46,20 +68,110 @@ def search():
     search_results = list(search_results_cursor)
     return render_template('search_results.html', products=search_results, query=query)
 
-@app.route('/about')
-def about():
-    return render_template('about.html')
-
-@app.route('/login')
+@app.route('/login', methods=['GET'])
 def login():
-    return render_template('login.html')
+    msg = request.args.get('msg')
+    return render_template('login.html', msg=msg)
 
-@app.route('/register')
+@app.route('/logout')
+def logout():
+    resp = make_response(redirect(url_for('login')))
+    resp.delete_cookie(TOKEN_KEY)
+    return resp
+
+@app.route("/sign_in", methods=["POST"])
+def sign_in():
+    email_receive = request.form["email_give"]
+    password_receive = request.form["password_give"]
+    pw_hash = hashlib.sha256(password_receive.encode("utf-8")).hexdigest()
+    result = db.users.find_one(
+        {
+            "email": email_receive,
+            "password": pw_hash,
+        }
+    )
+    if result:
+        payload = {
+            "id": email_receive,
+            "exp": datetime.utcnow() + timedelta(seconds=60 * 60 * 24),
+        }
+        token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
+
+        return jsonify(
+            {
+                "result": "success",
+                "token": token,
+            }
+        )
+    else:
+        return jsonify(
+            {
+                "result": "fail",
+                "msg": "We could not find a user with that id/password combination",
+            }
+        )
+
+@app.route('/register', methods=['GET'])
 def register():
-    return render_template('register.html')
+    msg = request.args.get('msg')
+    return render_template('register.html', msg=msg)
+
+@app.route("/sign_up/save", methods=["POST"])
+def sign_up():
+    username_receive = request.form['username_give']
+    email_receive = request.form['email_give']
+    contact_receive = request.form['contact_give']
+    address_receive = request.form['address_give']
+    password_receive = request.form['password_give']
+    
+    password_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
+    
+    doc = {
+        "username": username_receive,                               
+        "email": email_receive,                                     
+        "contact": contact_receive,                                 
+        "address": address_receive,                                 
+        "password": password_hash,                                  
+        "profile_name": username_receive,                           
+        "profile_pic": "",                                          
+        "profile_pic_real": "profile_pics/profile_placeholder.png", 
+        "profile_info": ""                                          
+    }
+    
+    db.users.insert_one(doc)
+    return jsonify({'result': 'success'})
+
+@app.route('/sign_up/check_usn', methods=['POST'])
+def check_usn():
+    username_receive = request.form['username_give']
+    exists = bool(db.users.find_one({"username": username_receive}))
+    return jsonify({'result': 'success', 'exists': exists})
+
+@app.route('/sign_up/check_email', methods=['POST'])
+def check_email():
+    email_receive = request.form['email_give']
+    exists = bool(db.users.find_one({"email": email_receive}))
+    return jsonify({'result': 'success', 'exists': exists})
+
+@app.route('/about')
+#fungsi tidak wajib login
+def about():
+    token_receive = request.cookies.get(TOKEN_KEY)
+    user_info = None
+
+    if token_receive:
+        try:
+            payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+            user_info = db.users.find_one({'email': payload.get('id')})
+        except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+            pass
+
+    is_logged_in = 'user_id' in session or user_info is not None
+
+    return render_template('about.html', is_logged_in=is_logged_in, user_info=user_info)
+
 
 # Products, Detail & All Start
-
 @app.route('/products')
 def products():
     product = list(db.products.find({}).sort("created_at", -1))
@@ -133,23 +245,46 @@ def detail_product(product_id):
 # Products, Detail & All End
 
 @app.route('/purchase')
+#fungsi wajib login
 def purchase():
-    return render_template('purchase.html')
+    token_receive = request.cookies.get(TOKEN_KEY)
+    
+    if not ('user_id' in session or token_receive):
+        return redirect(url_for('login'))  
+
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        user_info = db.users.find_one({'email': payload.get('id')})
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        user_info = None
+
+    return render_template('purchase.html', is_logged_in=True, user_info=user_info) 
 
 @app.route('/cart')
 def cart():
-    return render_template('cart.html')
+    token_receive = request.cookies.get(TOKEN_KEY)
+    
+    if not ('user_id' in session or token_receive):
+        return redirect(url_for('login'))  
+
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        user_info = db.users.find_one({'email': payload.get('id')})
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        user_info = None
+
+    return render_template('cart.html', is_logged_in=True, user_info=user_info) 
 
 @app.route('/update-profile')
 def update():
     return render_template('update-profile.html')
 
 ## admin side
-@app.route('/login-admin')
+@app.route('/adm-login')
 def loginAdmin():
     return render_template('adm-login.html')
 
-@app.route('/register-admin')
+@app.route('/adm-register')
 def registerAdmin():
     return render_template('adm-register.html')
 
