@@ -15,6 +15,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
     <!-- jquery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
 
     <!-- Logo Title -->
     <link rel="icon" href="../static/img/Logo.png" />
@@ -26,33 +28,88 @@
         const field = document.getElementById(fieldId);
         const icon = document.getElementById(iconId);
         if (field && icon) {
-            const isPassword = field.type === 'password';
-            field.type = isPassword ? 'text' : 'password';
-            icon.classList.toggle('fa-eye', !isPassword);
-            icon.classList.toggle('fa-eye-slash', isPassword);
+          const isPassword = field.type === 'password';
+          field.type = isPassword ? 'text' : 'password';
+          icon.classList.toggle('fa-eye', !isPassword);
+          icon.classList.toggle('fa-eye-slash', isPassword);
         }
       }
+
       //fungsi hide image section
-      $(document).ready(function() {
-        let imageSection = $('.image-section').detach();  
-    
+      $(document).ready(function () {
+        let imageSection = $('.image-section').detach();
+
         function toggleImageSection() {
-            if ($(window).width() <= 767) {
-                if ($('.image-section').length > 0) {
-                    imageSection = $('.image-section').detach();  
-                }
-            } else {
-                if ($('.image-section').length === 0) {
-                    $('.row.no-gutters').prepend(imageSection);  
-                }
+          if ($(window).width() <= 767) {
+            if ($('.image-section').length > 0) {
+              imageSection = $('.image-section').detach();
             }
+          } else {
+            if ($('.image-section').length === 0) {
+              $('.row.no-gutters').prepend(imageSection);
+            }
+          }
         }
         toggleImageSection();
-    
-        $(window).resize(function() {
-            toggleImageSection();
+
+        $(window).resize(function () {
+          toggleImageSection();
         });
       });
+
+      //fungsi enkripsi rememberMe
+      const secretKey = 'mytoken';
+
+      function encrypt(data) {
+        return CryptoJS.AES.encrypt(data, secretKey).toString();
+      }
+
+      function decrypt(data) {
+        const bytes = CryptoJS.AES.decrypt(data, secretKey);
+        return bytes.toString(CryptoJS.enc.Utf8);
+      }
+      // Mengisi form dengan email dan password yang disimpan
+      $(document).ready(function () {
+        const rememberMeEmail = localStorage.getItem('email');
+        const rememberMePassword = localStorage.getItem('password');
+
+        if (rememberMeEmail && rememberMePassword) {
+          $('#email').val(decrypt(rememberMeEmail));
+          $('#password').val(decrypt(rememberMePassword));
+          $('#rememberMe').prop('checked', true);
+        }
+      });
+
+      //fungsi login
+      function sign_in(event) {
+        event.preventDefault();
+        const email = $('#email').val();
+        const password = $('#password').val();
+        const rememberMe = $('#rememberMe').prop('checked');
+
+        if (!email) return $('#email').focus();
+        if (!password) return $('#password').focus();
+
+        $.post('/sign_in', { email_give: email, password_give: password }, function (response) {
+          if (response.result === 'success') {
+            const options = { path: '/' };
+            if (rememberMe) {
+              localStorage.setItem('email', encrypt(email));
+              localStorage.setItem('password', encrypt(password));
+            } else {
+              localStorage.removeItem('email');
+              localStorage.removeItem('password');
+            }
+            $.cookie('mytoken', response.token, options);
+            alert('You have been logged in successfully!');
+            window.location.replace('/');
+          } else {
+            alert('Login failed. Please check your email and password.');
+            $('#passwordError').text(response.msg);
+            $('#passwordError').addClass('text-danger');
+          }
+        });
+      }
     </script>
   </head>
   <body>
@@ -64,10 +121,10 @@
           <div class="form-container mt-5">
             <h2>Account Login</h2>
             <p class="">If you are already a member you can login with your email address and password.</p>
-            <form class="mt-4">
+            <form class="mt-4" onsubmit="sign_in(event)">
               <div class="form-group mb-4">
-                <label for="username">Email Address</label>
-                <input type="text" class="form-control" id="username" required />
+                <label for="email">Email Address</label>
+                <input type="email" class="form-control" id="email" required />
               </div>
               <div class="form-group mb-4">
                 <label for="password">Password</label>
@@ -77,12 +134,13 @@
                     <i class="fa fa-eye" id="togglePasswordIcon"></i>
                   </span>
                 </div>
+                <div id="passwordError" class="text-danger"></div>
               </div>
               <div class="form-group form-check mb-4">
                 <input type="checkbox" class="form-check-input" id="rememberMe" />
                 <label class="form-check-label" for="rememberMe">Remember Me</label>
               </div>
-              <button type="submit" class="btn btn-custom btn-block">Login</button>
+              <button type="submit" class="btn btn-custom btn-block" onclick="login()">Login</button>
               <p class="text-center mt-4">Don't have an account? <a href="/register">Sign up here</a></p>
             </form>
           </div>
