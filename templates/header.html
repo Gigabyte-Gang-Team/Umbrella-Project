@@ -21,10 +21,10 @@
                 </li>
             </ul>
             <div class="ms-auto">
-                <form class="d-flex" role="search">
-                    <input class="form-control me-2" type="text" placeholder="What are you looking for?"
+                <form class="d-flex" role="search" action="/search" method="get">
+                    <input class="form-control me-2" name="query" type="text" placeholder="What are you looking for?"
                         aria-label="Search" style="border-color: var(--warna-utama);">
-                    <button class="btn btn-default" style="background-color: var(--warna-utama);" type="button"><i
+                    <button class="btn btn-default" style="background-color: var(--warna-utama);" type="submit"><i
                             class="bi bi-search"></i></button>
                 </form>
             </div>

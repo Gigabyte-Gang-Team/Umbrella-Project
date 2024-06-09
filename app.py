@@ -3,6 +3,7 @@ from pymongo import MongoClient
 import requests
 from datetime import datetime, timedelta
 import hashlib
+import re
 
 import os
 from os.path import join, dirname
@@ -19,9 +20,29 @@ db = client[DB_NAME]
 
 app = Flask(__name__)
 
-@app.route('/')
+@app.route('/', methods=['GET','POST'])
 def home():
-    return render_template('home.html')
+    best_products = db.products.find().sort('total_pembelian', -1).limit(3)
+    
+    products = list(db.products.find({}))
+    unique_categories = {}
+    for product in products:
+        category = product['kategori_produk']
+        if category not in unique_categories:
+            unique_categories[category] = product
+
+    # Mengubah hasil menjadi daftar
+    kategori_produk = list(unique_categories.values())
+    
+    return render_template('home.html', best_products=best_products, kategori_produk=kategori_produk)
+
+@app.route('/search', methods=['GET'])
+def search():
+    query = request.args.get('query', '')
+    regex = re.compile(f".*{query}.*", re.IGNORECASE)
+    search_results_cursor = db.products.find({"nama_produk": regex})
+    search_results = list(search_results_cursor)
+    return render_template('search_results.html', products=search_results, query=query)
 
 @app.route('/about')
 def about():
