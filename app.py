@@ -68,6 +68,14 @@ def search():
     search_results = list(search_results_cursor)
     return render_template('search_results.html', products=search_results, query=query)
 
+# Nonaktifkan caching di setiap request
+@app.after_request
+def add_header(response):
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = 'Thu, 01 Jan 1970 00:00:00 GMT'
+    return response
+
 @app.route('/login', methods=['GET'])
 def login():
     msg = request.args.get('msg')
@@ -84,12 +92,10 @@ def sign_in():
     email_receive = request.form["email_give"]
     password_receive = request.form["password_give"]
     pw_hash = hashlib.sha256(password_receive.encode("utf-8")).hexdigest()
-    result = db.users.find_one(
-        {
-            "email": email_receive,
-            "password": pw_hash,
-        }
-    )
+    result = db.users.find_one({
+        "email": email_receive,
+        "password": pw_hash,
+    })
     if result:
         payload = {
             "id": email_receive,
@@ -97,19 +103,27 @@ def sign_in():
         }
         token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
 
-        return jsonify(
-            {
-                "result": "success",
-                "token": token,
-            }
-        )
+        resp = make_response(jsonify({"result": "success", "token": token}))
+        resp.set_cookie(TOKEN_KEY, token, httponly=True, samesite='Lax')
+        return resp
     else:
-        return jsonify(
-            {
-                "result": "fail",
-                "msg": "We could not find a user with that id/password combination",
-            }
-        )
+        return jsonify({"result": "fail", "msg": "We could not find a user with that id/password combination"})
+
+# Halaman yang dilindungi
+@app.route('/protected')
+def protected():
+    token = request.cookies.get(TOKEN_KEY)
+    if not token:
+        return redirect(url_for('login', msg="You need to log in first"))
+
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
+        # Jika token valid, render halaman yang dilindungi
+        return render_template('protected.html')
+    except jwt.ExpiredSignatureError:
+        return redirect(url_for('login', msg="Session expired. Please log in again."))
+    except jwt.InvalidTokenError:
+        return redirect(url_for('login', msg="Invalid token. Please log in again."))
 
 @app.route('/register', methods=['GET'])
 def register():

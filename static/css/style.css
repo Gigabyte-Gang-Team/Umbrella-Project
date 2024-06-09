@@ -341,8 +341,8 @@ body {
 }
 
 .carousel-item img {
-    width: 360px;
-    height: 360px;
+    width: 100%;
+    height: 340px;
     background-color: var(--warna-utama);
     object-fit: cover;
 }
@@ -402,17 +402,29 @@ body {
     border: 1px solid var(--warna-biru-tua);
     background-color: white;
     border-radius: 10px;
-    height: 482px;
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
 }
 
 .product-card-detail img {
     width: 100%;
-    height: auto;
+    height: 200px;
     border-radius: 10px;
     aspect-ratio: 1/1;
     object-fit: cover;
     border: 1px solid var(--warna-biru-tua);
     transition: 0.3s;
+}
+
+.product-card-detail p {
+    max-height: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
 }
 
 .product-card-detail:hover {
