@@ -410,7 +410,7 @@ body {
     border: 1px solid var(--warna-biru-tua);
     background-color: white;
     border-radius: 10px;
-    height: 500px;
+    height: 460px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;

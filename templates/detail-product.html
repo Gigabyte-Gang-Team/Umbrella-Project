@@ -264,7 +264,7 @@
                     <div class="product-card-detail"
                         onclick="window.location.href = '/detail-product/{{ product._id }}'">
                         <img src="../static/imgProduct/{{ product.gambar_produk[0] }}" alt="{{ product.nama_produk }}">
-                        <h5 class="mt-1 text-center fw-bold">{{ product.nama_produk | truncate(45, True, '...') }}</h5>
+                        <h5 class="mt-3 text-center fw-bold">{{ product.nama_produk | truncate(45, True, '...') }}</h5>
                         <p class="text-secondary" style="text-align: justify;">{{ product.deskripsi_produk | truncate(115, True, '...') }}</p>
                         <p class="text-center" style="font-size: 18px;"><strong>Rp. {{ product.harga_produk }}</strong></p>
                     </div>

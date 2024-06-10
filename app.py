@@ -62,11 +62,24 @@ def home():
 
 @app.route('/search', methods=['GET'])
 def search():
+    #   navbar profile
+    token_receive = request.cookies.get(TOKEN_KEY)
+    user_info = None
+
+    if token_receive:
+        try:
+            payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+            user_info = db.users.find_one({'email': payload.get('id')})
+        except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+            pass
+
+    is_logged_in = 'user_id' in session or user_info is not None
+    #   navbar profile end
     query = request.args.get('query', '')
     regex = re.compile(f".*{query}.*", re.IGNORECASE)
     search_results_cursor = db.products.find({"nama_produk": regex})
     search_results = list(search_results_cursor)
-    return render_template('search_results.html', products=search_results, query=query)
+    return render_template('search_results.html', products=search_results, query=query, is_logged_in=is_logged_in, user_info=user_info)
 
 # Nonaktifkan caching di setiap request
 @app.after_request
@@ -188,14 +201,40 @@ def about():
 # Products, Detail & All Start
 @app.route('/products')
 def products():
+    #   navbar profile
+    token_receive = request.cookies.get(TOKEN_KEY)
+    user_info = None
+
+    if token_receive:
+        try:
+            payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+            user_info = db.users.find_one({'email': payload.get('id')})
+        except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+            pass
+
+    is_logged_in = 'user_id' in session or user_info is not None
+    #   navbar profile end
     product = list(db.products.find({}).sort("created_at", -1))
 
     best_selling_products = db.products.find().sort("total_pembelian", -1)
 
-    return render_template('products.html', product=product, best_selling_products=best_selling_products)
+    return render_template('products.html', product=product, best_selling_products=best_selling_products, is_logged_in=is_logged_in, user_info=user_info)
 
 @app.route('/all-products')
 def all_products():
+    #   navbar profile
+    token_receive = request.cookies.get(TOKEN_KEY)
+    user_info = None
+
+    if token_receive:
+        try:
+            payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+            user_info = db.users.find_one({'email': payload.get('id')})
+        except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+            pass
+
+    is_logged_in = 'user_id' in session or user_info is not None
+    #   navbar profile end
     sort_option = request.args.get('sort')
     filter_category = request.args.get('filter')
 
@@ -215,10 +254,24 @@ def all_products():
     # Ambil produk dari database dengan filter dan urutkan sesuai kriteria
     products = list(db.products.find(query).sort(sort_criteria))
 
-    return render_template('all-products.html', products=products)
+    return render_template('all-products.html', products=products, is_logged_in=is_logged_in, user_info=user_info)
 
 @app.route('/detail-product/<product_id>')
 def detail_product(product_id):
+    #   navbar profile
+    token_receive = request.cookies.get(TOKEN_KEY)
+    user_info = None
+
+    if token_receive:
+        try:
+            payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+            user_info = db.users.find_one({'email': payload.get('id')})
+        except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+            pass
+
+    is_logged_in = 'user_id' in session or user_info is not None
+    #   navbar profile end
+    
     product = db.products.find_one({"_id": ObjectId(product_id)})
     if product:
         product['_id'] = str(product['_id'])  # Mengubah ObjectId menjadi string untuk Jinja template
@@ -254,7 +307,7 @@ def detail_product(product_id):
     # Tambahkan query untuk mengurutkan berdasarkan total pembelian
     best_selling_products = db.products.find().sort("total_pembelian", -1)
 
-    return render_template('detail-product.html', product=product, best_selling_products=best_selling_products)
+    return render_template('detail-product.html', product=product, best_selling_products=best_selling_products, is_logged_in=is_logged_in, user_info=user_info)
     
 # Products, Detail & All End
 
