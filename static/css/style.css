@@ -99,7 +99,7 @@ body {
     padding: 15px;
     text-align: center;
     transition: transform 0.3s;
-    height: 370px;
+    height: 320px;
     overflow: hidden;
 }
 
@@ -259,19 +259,27 @@ body {
 .prod .prod-item .prod-img {
     overflow: hidden;
     transition: 0.5s;
-    object-fit: contain;
-    border: 1px solid black;
+    height: 220px;
+    border: 1px solid var(--warna-biru-tua);
+    border-radius: 10px 10px 0 0;
 }
 
 .prod .prod-item .prod-img img {
     transition: 0.5s;
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
 }
 
 .card-head-price {
-    height: 155px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 130px;
     width: auto;
     background-color: #0587AA;
     color: white;
+    border-radius: 0 0 10px 10px;
 }
 
 .anchor {
