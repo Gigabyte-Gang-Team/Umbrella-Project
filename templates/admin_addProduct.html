@@ -1,0 +1,70 @@
+{%include 'header.html' %}
+
+<head>
+    <script>
+        function checkFileCount(event) {
+            var input = event.target;
+            if (input.files.length > 9) {
+                alert("Hanya maksimal 9 file yang diizinkan.");
+                input.value = ''; // Hapus file-file yang dipilih yang melebihi batas
+            }
+        }
+    </script>
+</head>
+
+<main id="main" class="main">
+
+
+    <div class="card border-0 shadow mb-4 ">
+        <div class="card-body mt-4">
+            <div class="table-responsive">
+                <form action="/addProduct" method="post" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="exampleInputPassword1" class="form-label fw-bold">Gambar Produk <span
+                                class="fw-bold" style="margin-left: 15px; color: brown;">(*Bisa satu gambar atau
+                                lebih)</span></label>
+                        <input type="file" class="form-control" accept=".png,.jpg,.jpeg" name="gambar_produk"
+                            style="border-radius: 13px;" placeholder="Masukkan gambar produk" required multiple
+                            onchange="checkFileCount(event)" />
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label fw-bold">Nama Produk</label>
+                        <input type="text" class="form-control" name="nama_produk" style="border-radius: 13px;"
+                            placeholder="Masukkan nama produk" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputPassword1" class="form-label fw-bold">Deskripsi Produk</label>
+                        <textarea class="form-control" name="deskripsi_produk" style="border-radius: 13px;"
+                            placeholder="Masukkan deskripsi produk" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputEmail1" class="form-label fw-bold">Merk Produk</label>
+                        <input type="text" class="form-control" name="merk_produk" style="border-radius: 13px;"
+                            placeholder="Masukkan merk produk" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="kategori_produk" class="mb-2 fw-bold">Kategori Produk :</label>
+                        <div>
+                            <select id="kategori_produk" name="kategori_produk" class="form-select-sm text-center"
+                                style="font-size: medium; border: 2px solid rgb(218, 218, 218); width: 180px; border-radius: 13px;">
+                                <option value="" hidden>Pilih Kategori</option>
+                                <option value="Light">Light</option>
+                                <option value="Electronic">Electronic</option>
+                                <option value="Other">Other</option>
+                            </select required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputPassword1" class="form-label fw-bold">Harga</label>
+                        <input type="number" class="form-control" name="harga_produk" style="border-radius: 13px;"
+                            placeholder="Masukkan harga produk (angka)" required />
+                    </div>
+                    <div class="mb-3">
+                        <label for="exampleInputPassword1" class="form-label fw-bold">Stok</label>
+                        <input type="number" class="form-control" name="stok_produk" style="border-radius: 13px;"
+                            placeholder="Masukkan stok produk (angka)" required />
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="margin-left: 90%;">Submit</button>
+            </div>
+            </form>
+</main><!-- End #main -->

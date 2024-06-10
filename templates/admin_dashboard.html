@@ -1,0 +1,34 @@
+{% include "header.html" %}
+<main id="main" class="main">
+  <!-- End Page Title -->
+
+  <style>
+    .centered-text {
+      position: absolute;
+      top: 50%;
+      left: 60%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      /* Ini untuk mengatur teks secara horizontal di tengah */
+    }
+  </style>
+
+  <h1 class="centered-text">UNDONE</h1>
+
+  <!-- <div class="row row-cols-1 row-cols-md-3 g-4">
+    {% for item in product %}
+    <div class="col">
+      <div class="card">
+        <img src="../static/imgProduct/{{ item.gambar_produk[0] }}" class="card-img-top" alt="Gambar" height="300" style="object-fit: cover" />
+        <div class="card-body">
+          <div class="d-flex justify-content-between">
+            <h5 class="card-title">{{ item.nama_produk | truncate(45, True, '...') }}</h5>
+            <h5 class="card-title fw-bold" style="color: blue">{{ item.harga_produk }}</h5>
+          </div>
+          <p class="card-text">{{ item.deskripsi_produk | truncate(50, True, '...') }}</p>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div> -->
+</main>
