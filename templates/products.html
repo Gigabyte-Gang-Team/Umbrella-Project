@@ -45,17 +45,18 @@
     <!-- Banner Top Start -->
 
     <section class="banner">
-        <div class="row banner-row"  style="border-top: 3px solid #0587AA; border-bottom: 3px solid #0587AA;">
+        <div class="row banner-row">
             {% for item in product[:1] %}
             <div class="img-banner col-md-4">
-                <img src="../static/imgProduct/{{ item.gambar_produk[0] }}" alt="img-banner">
+                <img src="../static/imgProduct/{{ item.gambar_produk[0] }}" alt="img-banner"
+                    style="width: 100%; height: 340px;">
             </div>
             <div class="col-md-6 tagline-banner produk" data-id="{{ item._id }}">
                 <h2 style="color: #73A336;">Our New Product</h2>
                 <h2>{{ item.nama_produk }}</h2>
                 <h5 class="text-secondary mt-4">{{ item.deskripsi_produk | truncate(170, True, '...') }}</h5>
                 <button class="btn btn-check-product fw-bold mt-4 fs-5 text-white"
-                onclick="redirectToDetail('{{ item._id }}')">Check Product<i
+                    onclick="redirectToDetail('{{ item._id }}')">Check Product<i
                         class="fas fa-arrow-right px-2"></i></button>
             </div>
             {% endfor %}
@@ -66,7 +67,7 @@
 
 
     <!-- Products Start -->
-    <div class="container prod py-5">
+    <div class="container prod ">
         <div class="container py-5">
             <div class="row g-4">
                 <!-- Products Body Start -->
@@ -84,37 +85,36 @@
                                 {% for item in product[:8] %}
                                 <div class="col-md-2 col-lg-2 col-xl-3 produk" data-id="{{ item._id }}">
                                     <div class="position-relative prod-item"
-                                    onclick="redirectToDetail('{{ item._id }}')" style="cursor: pointer;">
+                                        onclick="redirectToDetail('{{ item._id }}')" style="cursor: pointer;">
                                         <div class="prod-img">
                                             <img src="../static/imgProduct/{{ item.gambar_produk[0] }}"
-                                                class="img-fluid w-100" alt="">
+                                                class="img-fluid" alt="">
                                         </div>
                                         <div class="card-head-price p-4">
                                             <h6>{{ item.nama_produk | truncate(47, True, '...') }}</h6>
-                                            <div class="d-flex justify-content-between flex-lg-wrap">
+                                            <div class="d-flex justify-content-between align-items-center">
                                                 <p class="fs-5 fw-bold mb-0">Rp. {{ item.harga_produk }}</p>
                                                 <a href="#"
                                                     class="btn-tagline border border-secondary rounded-pill px-3 mt-1"><i
-                                                        class="fa fa-shopping-bag" style="padding-top: 10px; padding-bottom: 10px;"></i></a>
+                                                        class="fa fa-shopping-bag"
+                                                        style="padding-top: 10px; padding-bottom: 10px;"></i></a>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 {% endfor %}
-
                             </div>
-
                         </div>
                         <button onclick="window.location.href = '/all-products'"
-                            class="btn-all-products rounded mt-5 p-2 fw-bold">View
+                            class="btn-all-products rounded fw-bold">View
                             All Products</button>
                     </div>
                 </div>
                 <!-- Products Body Start -->
 
                 <!-- Best Selling Body Start -->
-                <div class="col-lg-12">
-                    <div class="row-title g-4">
+                <div class="col-lg-12 pt-4">
+                    <div class="row-title g-4 pt-5">
                         <div class="col-xl-3">
                             <div class="ps-3 py-3 rounded d-flex justify-content-between mb-4">
                                 <h4 class="fs-3">Best Selling Products</h4>
@@ -127,9 +127,11 @@
                                 {% for product in best_selling_products[:4] %}
                                 <div class="col-md-2 col-lg-2 col-xl-3">
                                     <div class="position-relative prod-item"
-                                    onclick="window.location.href = '/detail-product/{{ product._id }}'" style="cursor: pointer;">
+                                        onclick="window.location.href = '/detail-product/{{ product._id }}'"
+                                        style="cursor: pointer;">
                                         <div class="prod-img">
-                                            <img src="../static/imgProduct/{{ product.gambar_produk[0] }}" class="img-fluid w-100" alt="">
+                                            <img src="../static/imgProduct/{{ product.gambar_produk[0] }}"
+                                                class="img-fluid w-100" alt="">
                                         </div>
                                         <div class="card-head-price p-4">
                                             <h6>{{ product.nama_produk | truncate(47, True, '...') }}</h6>
@@ -137,7 +139,8 @@
                                                 <p class="fs-5 fw-bold mb-0">Rp. {{ product.harga_produk }}</p>
                                                 <a href="#"
                                                     class="btn-tagline border border-secondary rounded-pill px-3 mt-1"><i
-                                                        class="fa fa-shopping-bag" style="padding-top: 10px; padding-bottom: 10px;"></i></a>
+                                                        class="fa fa-shopping-bag"
+                                                        style="padding-top: 10px; padding-bottom: 10px;"></i></a>
                                             </div>
                                         </div>
                                     </div>
@@ -146,7 +149,7 @@
                             </div>
                         </div>
                         <button onclick="window.location.href = '/all-products?sort=best_selling'"
-                            class="btn-all-products rounded mt-5 col-md-2 col-lg-2 col-xl-2 p-2 fw-bold">View
+                            class="btn-all-products rounded col-md-2 col-lg-2 col-xl-2 p-2 fw-bold">View
                             Best Selling</button>
                     </div>
                 </div>
