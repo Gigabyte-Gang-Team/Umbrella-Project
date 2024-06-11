@@ -1,7 +1,7 @@
 <!-- Header -->
 <nav class="navbar navbar-expand-lg bg-body">
     <div class="container">
-        <a class="navbar-brand" href="#">
+        <a class="navbar-brand" href="/">
             <img src="../static/img/Logo.png" alt="Bootstrap" width="70" />
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
@@ -33,12 +33,17 @@
                 <a class="navbar-brand" href="#">
                     {% if is_logged_in %}
                     <div class="user-text">{{ user_info['profile_name'] }}</div>
+                    <img src="../static/{{ user_info.profile_pic_real }}" alt="Avatar Logo"
+                        style="width: 40px; border: 1px solid var(--warna-utama)" class="rounded-pill"
+                        onclick="redirectToUpdatePage()" />
+                    <div class="vertical-line"></div>
                     {% else %}
                     <div class="user-text">Guest</div>
-                    {% endif %}
                     <img src="../static/img/profile_default.png" alt="Avatar Logo"
-                        style="width: 40px; border: 1px solid var(--warna-utama)" class="rounded-pill" />
+                        style="width: 40px; border: 1px solid var(--warna-utama)" class="rounded-pill"
+                        onclick="redirectToUpdatePage()" />
                     <div class="vertical-line"></div>
+                    {% endif %}
                 </a>
             </div>
             <!-- End Profile -->
@@ -48,7 +53,7 @@
                 </a>
                 <ul class="dropdown-menu">
                     <li>
-                        <a class="dropdown-item" href="/update-profile"><i class="bi bi-person"></i> Profile</a>
+                        <a class="dropdown-item" href="/update_profile"><i class="bi bi-person"></i> Profile</a>
                     </li>
                     <li>
                         <a class="dropdown-item" href="/cart"><i class="bi bi-bag"></i> Cart</a>
@@ -73,4 +78,10 @@
         </div>
     </div>
 </nav>
+
+<script>
+    function redirectToUpdatePage() {
+        window.location.href = "/update_profile";
+    }
+</script>
 <!-- End Header -->
