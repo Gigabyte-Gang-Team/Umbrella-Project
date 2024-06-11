@@ -96,7 +96,7 @@ def login():
 
 @app.route('/logout')
 def logout():
-    resp = make_response(redirect(url_for('login')))
+    resp = make_response(redirect(url_for('home')))
     resp.delete_cookie(TOKEN_KEY)
     return resp
 
@@ -342,9 +342,54 @@ def cart():
 
     return render_template('cart.html', is_logged_in=True, user_info=user_info) 
 
-@app.route('/update-profile')
+@app.route('/update_profile', methods=['GET', 'POST'])
 def update():
-    return render_template('update-profile.html')
+    token_receive = request.cookies.get(TOKEN_KEY)
+    
+    if not ('user_id' in session or token_receive):
+        return redirect(url_for('login'))  
+
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        user_info = db.users.find_one({'email': payload.get('id')})
+        email = payload.get('id')
+        
+        if request.method == 'POST':
+            username_receive = request.form.get('username_give')
+            email_receive = request.form.get('email_give')
+            contact_receive = request.form.get('contact_give')
+            address_receive = request.form.get('address_give')
+
+            new_doc = {
+                "username": username_receive,                               
+                "email": email_receive,                                     
+                "contact": contact_receive,                                 
+                "address": address_receive,                                  
+                "profile_name": username_receive,                                                                  
+            }
+
+            if 'file_give' in request.files:
+                file = request.files.get('file_give')
+                filename = secure_filename(file.filename)
+                extension = filename.split('.')[-1]
+                if extension not in ['jpg', 'jpeg', 'png', 'gif']:
+                    return jsonify({'result': 'error', 'msg': 'Invalid file type'})
+                file_path = f'profile_pics/{username_receive}.{extension}'
+                file.save('./static/' + file_path)
+                new_doc['profile_pic_real'] = file_path
+
+            db.users.update_one(
+                {'email': email},
+                {'$set': new_doc}
+            )
+            return redirect(url_for('home')) 
+
+        return render_template('update_profile.html', is_logged_in=True, user_info=user_info)
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        user_info = None
+        
+    return redirect(url_for('login'))
+
 
 ## admin side
 @app.route('/adm-login')
