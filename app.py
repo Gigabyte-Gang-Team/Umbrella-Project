@@ -392,13 +392,104 @@ def update():
 
 
 ## admin side
-@app.route('/adm-login')
-def loginAdmin():
-    return render_template('adm-login.html')
+## admin side
+@app.route('/login/admin', methods=['GET'])
+def login_admin():
+    msg = request.args.get('msg')
+    return render_template('adm-login.html', msg=msg)
 
-@app.route('/adm-register')
-def registerAdmin():
-    return render_template('adm-register.html')
+@app.route('/logout/admin')
+def logout_admin():
+    resp = make_response(redirect(url_for('login_admin')))
+    resp.delete_cookie(TOKEN_KEY)
+    return resp
+ 
+@app.route("/sign_in/admin", methods=["POST"])
+def sign_in_admin():
+    email_receive = request.form["email_give"]
+    password_receive = request.form["password_give"]
+    pw_hash = hashlib.sha256(password_receive.encode("utf-8")).hexdigest()
+    result = db.admin.find_one(
+        {
+            "email": email_receive,
+            "password": pw_hash,
+        }
+    )
+    if result:
+        payload = {
+            "id": email_receive,
+            "exp": datetime.utcnow() + timedelta(seconds=60 * 60 * 24),
+        }
+        token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
+
+        return jsonify(
+            {
+                "result": "success",
+                "token": token,
+            }
+        )
+    else:
+        return jsonify(
+            {
+                "result": "fail",
+                "msg": "We could not find a user with that id/password combination",
+            }
+        )
+
+@app.route('/register/admin', methods=['GET'])
+def register_admin():
+    msg = request.args.get('msg')
+    return render_template('adm-register.html', msg=msg)
+
+@app.route("/sign_up/save/admin", methods=["POST"])
+def sign_up_admin():
+    username_receive = request.form['username_give']
+    email_receive = request.form['email_give']
+
+    password_receive = request.form['password_give']
+    
+    password_hash = hashlib.sha256(password_receive.encode('utf-8')).hexdigest()
+    
+    doc = {
+        "username": username_receive,                               # id
+        "email": email_receive,                                     # email
+
+        "password": password_hash,                                  # password
+        "profile_name": username_receive,                           # user's name is set to their id by default
+        "profile_pic": "",                                          # profile image file name
+        "profile_pic_real": "profile_pics/profile_placeholder.png", # a default profile image
+        "profile_info": ""                                          # a profile description
+    }
+    
+    db.admin.insert_one(doc)
+    return jsonify({'result': 'success'})
+
+@app.route('/sign_up/check_usn/admin', methods=['POST'])
+def check_usn_admin():
+    username_receive = request.form['username_give']
+    exists = bool(db.admin.find_one({"username": username_receive}))
+    return jsonify({'result': 'success', 'exists': exists})
+
+@app.route('/sign_up/check_email/admin', methods=['POST'])
+def check_email_admin():
+    email_receive = request.form['email_give']
+    exists = bool(db.admin.find_one({"email": email_receive}))
+    return jsonify({'result': 'success', 'exists': exists})
+
+@app.route('/dashboard')
+def dashboard():
+    token_receive = request.cookies.get(TOKEN_KEY)
+    
+    if not ('user_id' in session or token_receive):
+        return redirect(url_for('login_admin'))  # Redirect to the login page if not logged in
+
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        user_info = db.admin.find_one({'email': payload.get('id')})
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        user_info = None
+
+    return render_template('dashboard.html', is_logged_in=True, user_info=user_info) 
 
 @app.route('/riwayat')
 def riwayat():

@@ -1,0 +1,39 @@
+<div class="navbar-item profile">
+    <a class="navbar-brand" href="#">
+      {% if is_logged_in %}
+      <div class="user-text">{{ user_info['profile_name'] }}</div>
+      {% else %}
+      <div class="user-text">Guest</div>
+      {% endif %}
+      <img src="../static/img/profile_default.png" alt="Avatar Logo" style="width: 40px; border: 1px solid var(--warna-utama)" class="rounded-pill" />
+      <div class="vertical-line"></div>
+    </a>
+  </div>
+  <div class="nav-item dropdown">
+    <a class="nav-link" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+      <span class="navbar-toggler-icon"></span>
+    </a>
+    <ul class="dropdown-menu">
+      <li>
+        <a class="dropdown-item" href="/update-profile"><i class="bi bi-person"></i> Profile</a>
+      </li>
+      <li>
+        <a class="dropdown-item" href="/cart"><i class="bi bi-bag"></i> Cart</a>
+      </li>
+      <li>
+        <a class="dropdown-item" href="#"><i class="bi bi-clock-history"></i> History</a>
+      </li>
+      <li>
+        <hr class="dropdown-divider" />
+      </li>
+      {% if is_logged_in %}
+      <li>
+        <a class="dropdown-item" href="/logout/admin"><i class="bi bi-box-arrow-right"></i> Logout</a>
+      </li>
+      {% else %}
+      <li>
+        <a class="dropdown-item" href="/login/admin"><i class="bi bi-box-arrow-right"></i> Login</a>
+      </li>
+      {% endif %}
+    </ul>
+  </div>
