@@ -13,10 +13,230 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700;1,800&display=swap" rel="stylesheet" />
     <!-- Font Awesome for eye icon -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+    <!-- jquery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+
     <!-- Logo Title -->
     <link rel="icon" href="../static/img/Logo.png" />
 
     <title>Umbrella Project | Login User</title>
+    <script>
+      //fungsi eye pw
+      function togglePassword(fieldId, iconId) {
+        const field = document.getElementById(fieldId);
+        const icon = document.getElementById(iconId);
+        if (field && icon) {
+          const isPassword = field.type === 'password';
+          field.type = isPassword ? 'text' : 'password';
+          icon.classList.toggle('fa-eye', !isPassword);
+          icon.classList.toggle('fa-eye-slash', isPassword);
+        }
+      }
+      //fungsi hide image section
+      $(document).ready(function () {
+        let imageSection = $('.image-section').detach();
+
+        function toggleImageSection() {
+          if ($(window).width() <= 767) {
+            if ($('.image-section').length > 0) {
+              imageSection = $('.image-section').detach();
+            }
+          } else {
+            if ($('.image-section').length === 0) {
+              $('.row.no-gutters').prepend(imageSection);
+            }
+          }
+        }
+        toggleImageSection();
+
+        $(window).resize(function () {
+          toggleImageSection();
+        });
+      });
+
+      //fungsi register
+      function is_nickname(asValue) {
+        var regExp = /^(?=.*[a-zA-Z])[-a-zA-Z0-9_.]{4,10}$/;
+        return regExp.test(asValue);
+      }
+      function is_password(asValue) {
+        var regExp = /^(?=.*\d)(?=.*[a-zA-Z])[0-9a-zA-Z!@#$%^&*]{8,20}$/;
+        return regExp.test(asValue);
+      }
+      function is_contact(asValue) {
+        var regExp = /^[0-9]{10,15}$/;
+        return regExp.test(asValue);
+      }
+      function is_email(asValue) {
+        var regExp = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return regExp.test(asValue);
+      }
+      function check_username() {
+        let username = $('#username').val();
+        console.log(username);
+        if (username === '') {
+          $('#help-id')
+            .text('Enter in your name')
+            .removeClass('text-success') // Menghapus kelas text-success
+            .addClass('text-danger'); // Menambahkan kelas text-danger
+          $('#username').focus();
+          return;
+        }
+        if (!is_nickname(username)) {
+          $('#help-id')
+            .text('Please check your id. For your id, please enter 4-10 English characters, numbers, or the following special characters (._-)')
+            .removeClass('text-success') // Menghapus kelas text-success
+            .addClass('text-danger'); // Menambahkan kelas text-danger
+          $('#input-username').focus();
+          return;
+        }
+        $.ajax({
+          type: 'POST',
+          url: '/sign_up/check_usn',
+          data: {
+            username_give: username,
+          },
+          success: function (response) {
+            if (response['exists']) {
+              $('#help-id')
+                .text('This id is already in use.')
+                .removeClass('text-success') // Menghapus kelas text-success
+                .addClass('text-danger'); // Menambahkan kelas text-danger
+              $('#input-username').focus();
+            } else {
+              $('#help-id')
+                .text('This id is available!')
+                .removeClass('text-danger') // Menghapus kelas text-danger
+                .addClass('text-success'); // Menambahkan kelas text-success
+            }
+          },
+        });
+      }
+      function check_email() {
+        let email = $('#email').val();
+        console.log(email);
+        if (email === '') {
+          $('#help-email')
+            .text('Enter your email')
+            .removeClass('text-success') // Menghapus kelas text-success
+            .addClass('text-danger'); // Menambahkan kelas text-danger
+          $('#email').focus();
+          return;
+        }
+        if (!is_email(email)) {
+          $('#help-email')
+            .text('Please enter a valid email address')
+            .removeClass('text-success') // Menghapus kelas text-success
+            .addClass('text-danger'); // Menambahkan kelas text-danger
+          $('#email').focus();
+          return;
+        }
+        // Valid email, you can perform further actions here if needed
+        $.ajax({
+          type: 'POST',
+          url: '/sign_up/check_email',
+          data: {
+            email_give: email,
+          },
+          success: function (response) {
+            if (response['exists']) {
+              $('#help-email')
+                .text('This email is already in use.')
+                .removeClass('text-success') // Menghapus kelas text-success
+                .addClass('text-danger'); // Menambahkan kelas text-danger
+              $('#email').focus();
+            } else {
+              $('#help-email')
+                .text('This email is available!')
+                .removeClass('text-danger') // Menghapus kelas text-danger
+                .addClass('text-success'); // Menambahkan kelas text-success
+            }
+          },
+        });
+      }
+
+      function check_contact() {
+        let contact = $('#contact').val();
+        console.log(contact);
+        if (!is_contact(contact)) {
+          $('#help-contact').text('Please enter a valid contact number. It should contain between 10 and 15 digits.').removeClass('text-success').addClass('text-danger');
+          $('#contact');
+          return;
+        } else {
+          $('#help-contact').text('Valid contact number.').removeClass('text-danger').addClass('text-success');
+        }
+        let contactInput = $('#contact');
+        let contactPattern = '[0-9]{10,15}';
+        contactInput.attr('pattern', contactPattern);
+      }
+
+      function sign_up() {
+        let username = $('#username').val();
+        let email = $('#email').val();
+        let contact = $('#contact').val();
+        let address = $('#address').val();
+        let password = $('#password').val();
+        let password2 = $('#confirmPassword').val();
+        console.log(username, password, password2);
+
+        const checks = [
+          { id: '#help-email', text: 'Email' },
+          { id: '#help-id', text: 'Username' },
+          { id: '#help-contact', text: 'contact number' },
+        ];
+
+        for (const check of checks) {
+          const element = $(check.id);
+          if (element.hasClass('text-danger')) {
+            alert(`Please check your ${check.text}!`);
+            return;
+          } else if (!element.hasClass('text-success')) {
+            alert(`Please double check your ${check.text}!`);
+            return;
+          }
+        }
+
+        if (password === '') {
+          $('#help-password').text('Please enter your password').removeClass('text-succes').addClass('text-danger');
+          $('#password').focus();
+          return;
+        } else if (!is_password(password)) {
+          $('#help-password').text('Please check your password. For your password, please enter 8-20 English characters, numbers, or the following special characters (!@#$%^&*)').removeClass('text-succes').addClass('text-danger');
+          $('#password').focus();
+          return;
+        } else {
+          $('#help-password').text('This password can be used!').removeClass('text-danger').addClass('text-success');
+        }
+
+        if (password2 === '') {
+          $('#help-password2').text('Please enter your password').removeClass('text-succes').addClass('text-danger');
+          $('#confirmPassword').focus();
+          return;
+        } else if (password2 !== password) {
+          $('#help-password2').text('Your passwords do not match').removeClass('text-succes').addClass('text-danger');
+          $('#confirmPassword').focus();
+          return;
+        } else {
+          $('#help-password2').text('Your passwords do not match').removeClass('text-danger').addClass('text-succes');
+        }
+        $.ajax({
+          type: 'POST',
+          url: '/sign_up/save',
+          data: {
+            username_give: username,
+            email_give: email,
+            contact_give: contact,
+            address_give: address,
+            password_give: password,
+          },
+          success: function (response) {
+            alert('You are signed up! Nice!');
+            window.location.replace('/login');
+          },
+        });
+      }
+    </script>
   </head>
   <body>
     <div class="container-fluid">
@@ -26,18 +246,21 @@
           <button class="back-button btn" onclick="window.history.back()">< Back</button>
           <div class="form-container mt-5">
             <h2>Account Signup</h2>
-            <form class="mt-4">
+            <form class="mt-4" onsubmit="sign_up(); return false;">
               <div class="form-group mb-2">
                 <label for="username">Username</label>
-                <input type="text" class="form-control" id="username" required />
+                <input type="text" class="form-control" id="username" onblur="check_username()" required />
+                <p id="help-id" class="help"></p>
               </div>
               <div class="form-group mb-2">
                 <label for="email">Email</label>
-                <input type="email" class="form-control" id="email" required />
+                <input type="email" class="form-control" id="email" onblur="check_email()" required />
+                <p id="help-email" class="help"></p>
               </div>
               <div class="form-group mb-2">
                 <label for="contact">Contact</label>
-                <input type="text" class="form-control" id="contact" required />
+                <input type="tel" class="form-control" id="contact" onblur="check_contact()" required />
+                <p id="help-contact" class="help"></p>
               </div>
               <div class="form-group mb-2">
                 <label for="address">Address</label>
@@ -51,6 +274,7 @@
                     <i class="fa fa-eye" id="togglePasswordIcon"></i>
                   </span>
                 </div>
+                <p id="help-password" class="help"></p>
               </div>
               <div class="form-group mb-4">
                 <label for="confirmPassword">Confirm Password</label>
@@ -60,6 +284,7 @@
                     <i class="fa fa-eye" id="toggleConfirmPasswordIcon"></i>
                   </span>
                 </div>
+                <p id="help-password2" class="help"></p>
               </div>
               <button type="submit" class="btn btn-custom btn-block">Create Account</button>
               <p class="text-center mt-4">Already have an account? <a href="/login">Log in</a></p>
@@ -68,17 +293,5 @@
         </div>
       </div>
     </div>
-    <script>
-      function togglePassword(fieldId, iconId) {
-        const field = document.getElementById(fieldId);
-        const icon = document.getElementById(iconId);
-        if (field && icon) {
-            const isPassword = field.type === 'password';
-            field.type = isPassword ? 'text' : 'password';
-            icon.classList.toggle('fa-eye', !isPassword);
-            icon.classList.toggle('fa-eye-slash', isPassword);
-        }
-      }
-    </script>
   </body>
 </html>

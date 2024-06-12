@@ -1,8 +1,8 @@
 <!-- Header -->
 <nav class="navbar navbar-expand-lg bg-body">
     <div class="container">
-        <a class="navbar-brand" href="#">
-            <img src="../static/img/Logo.png" alt="Bootstrap" width="70">
+        <a class="navbar-brand" href="/">
+            <img src="../static/img/Logo.png" alt="Bootstrap" width="70" />
         </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -21,20 +21,29 @@
                 </li>
             </ul>
             <div class="ms-auto">
-                <form class="d-flex" role="search">
-                    <input class="form-control me-2" type="text" placeholder="What are you looking for?"
-                        aria-label="Search" style="border-color: var(--warna-utama);">
-                    <button class="btn btn-default" style="background-color: var(--warna-utama);" type="button"><i
+                <form class="d-flex" role="search" action="/search" method="get">
+                    <input class="form-control me-2" name="query" type="text" placeholder="What are you looking for?"
+                        aria-label="Search" style="border-color: var(--warna-utama)" />
+                    <button class="btn btn-default" style="background-color: var(--warna-utama)" type="submit"><i
                             class="bi bi-search"></i></button>
                 </form>
             </div>
             <!-- Profile -->
             <div class="navbar-item profile">
                 <a class="navbar-brand" href="#">
-                    <div class="user-text">User</div>
-                    <img src="../static/img/profile_default.png" alt="Avatar Logo"
-                        style="width:40px; border: 1px solid var(--warna-utama);" class="rounded-pill">
+                    {% if is_logged_in %}
+                    <div class="user-text">{{ user_info['profile_name'] }}</div>
+                    <img src="../static/{{ user_info.profile_pic_real }}" alt="Avatar Logo"
+                        style="width: 40px; border: 1px solid var(--warna-utama)" class="rounded-pill"
+                        onclick="redirectToUpdatePage()" />
                     <div class="vertical-line"></div>
+                    {% else %}
+                    <div class="user-text">Guest</div>
+                    <img src="../static/img/profile_default.png" alt="Avatar Logo"
+                        style="width: 40px; border: 1px solid var(--warna-utama)" class="rounded-pill"
+                        onclick="redirectToUpdatePage()" />
+                    <div class="vertical-line"></div>
+                    {% endif %}
                 </a>
             </div>
             <!-- End Profile -->
@@ -43,16 +52,36 @@
                     <span class="navbar-toggler-icon"></span>
                 </a>
                 <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="#"><i class="bi bi-person"></i> Profile</a></li>
-                    <li><a class="dropdown-item" href="/cart"><i class="bi bi-bag"></i> Cart</a></li>
-                    <li><a class="dropdown-item" href="#"><i class="bi bi-clock-history"></i> History</a></li>
                     <li>
-                        <hr class="dropdown-divider">
+                        <a class="dropdown-item" href="/update_profile"><i class="bi bi-person"></i> Profile</a>
                     </li>
-                    <li><a class="dropdown-item" href="/login"><i class="bi bi-box-arrow-right"></i> Login</a></li>
+                    <li>
+                        <a class="dropdown-item" href="/cart"><i class="bi bi-bag"></i> Cart</a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="#"><i class="bi bi-clock-history"></i> History</a>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider" />
+                    </li>
+                    {% if is_logged_in %}
+                    <li>
+                        <a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
+                    </li>
+                    {% else %}
+                    <li>
+                        <a class="dropdown-item" href="/login"><i class="bi bi-box-arrow-right"></i> Login</a>
+                    </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
     </div>
 </nav>
+
+<script>
+    function redirectToUpdatePage() {
+        window.location.href = "/update_profile";
+    }
+</script>
 <!-- End Header -->
