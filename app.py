@@ -43,6 +43,10 @@ def cart():
 def update():
     return render_template('update-profile.html')
 
+@app.route('/riwayat')
+def riwayat():
+    return render_template('riwayat.html')
+
 
 if __name__ == '__main__':
     app.run(port=5000, debug=True)
