@@ -396,7 +396,7 @@ def update():
 @app.route('/login/admin', methods=['GET'])
 def login_admin():
     msg = request.args.get('msg')
-    return render_template('adm-login.html', msg=msg)
+    return render_template('admin/adm-login.html', msg=msg)
 
 @app.route('/logout/admin')
 def logout_admin():
@@ -439,7 +439,7 @@ def sign_in_admin():
 @app.route('/register/admin', methods=['GET'])
 def register_admin():
     msg = request.args.get('msg')
-    return render_template('adm-register.html', msg=msg)
+    return render_template('admin/adm-register.html', msg=msg)
 
 @app.route("/sign_up/save/admin", methods=["POST"])
 def sign_up_admin():
@@ -489,7 +489,7 @@ def dashboard():
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         user_info = None
 
-    return render_template('dashboard.html', is_logged_in=True, user_info=user_info) 
+    return render_template('admin/dashboard-admin.html', is_logged_in=True, user_info=user_info) 
 
 @app.route('/riwayat')
 def riwayat():
