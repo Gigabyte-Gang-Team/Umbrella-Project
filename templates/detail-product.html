@@ -68,6 +68,42 @@
             inputElement.value = value;
             console.log('New Value (Decrease):', value); // Debugging
         }
+
+        function addToCart() {
+            const product_id = '{{ product._id }}';  // Pastikan product._id adalah string
+            const user_id = '{{ user_info["_id"] if user_info else "" }}';  // Pastikan user_info["_id"] adalah string
+            const quantity = parseInt(document.getElementById('quantityInput').value);
+            const note = document.querySelector('textarea.form-control').value;
+
+            if (!user_id) {
+                alert('Anda harus login untuk menambahkan produk ke keranjang.');
+                return;
+            }
+
+            const data = {
+                user_id: user_id,
+                product_id: product_id,
+                quantity: quantity,
+                note: note
+            };
+
+            console.log('Data yang dikirim:', data);
+
+            $.ajax({
+                url: '/add-to-cart',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function (response) {
+                    alert(response.message);
+                    window.location.href = '/cart';
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error dari server:', error);
+                    alert('Gagal menambahkan produk ke keranjang.');
+                }
+            });
+        }
     </script>
 
 </head>
@@ -80,8 +116,7 @@
     <div class="container mt-5">
         <div class="container" style="margin-top: 20px;">
             <div class="row g-4">
-                <span onclick="window.location.href = '/all-products'"
-                    style="cursor: pointer; opacity: 80%; width: 100px;"><i
+                <span onclick="window.history.back()" style="cursor: pointer; opacity: 80%; width: 100px;"><i
                         class="fas fa-chevron-left px-2"></i>Back</span>
                 {% if product %}
                 <div class="col-lg-10 col-xl-12">
@@ -178,16 +213,16 @@
                                         <span class="fw-bold" style="color: green; margin-left: 20px; margin-top: 5px;">
                                             Stok tersedia :
                                             {% if product.stok_produk == 0 %}
-                                                Kosong
+                                            Kosong
                                             {% else %}
-                                                {{ product.stok_produk }}
+                                            {{ product.stok_produk }}
                                             {% endif %}
                                         </span>
                                     </div>
 
                                     <br>
                                     <div class="d-flex mt-2" style="justify-content: space-around;">
-                                        <button onclick="window.location.href = '/cart';"
+                                        <button onclick="addToCart()"
                                             class="btn-all-products rounded px-5 p-2 mb-1 mt-3">Add to Cart</button>
                                         <button onclick="window.location.href = '/purchase';"
                                             class="btn-all-products rounded px-5 p-2 mb-1 mt-3 fw-bold">Buy Now</button>
@@ -256,7 +291,8 @@
                     <h2 class="mb-4 fw-bold">Best Selling Products</h2>
                     <p class="mb-4 text-secondary">Easiest way to buying your favorite product </p>
                     <button class="btn-see-more btn-light fw-bold rounded"
-                        onclick="window.location.href = '/all-products?sort=best_selling'" style="transition: 0.3s;">See More
+                        onclick="window.location.href = '/all-products?sort=best_selling'" style="transition: 0.3s;">See
+                        More
                         <i class="fas fa-arrow-right"></i></button>
                 </div>
                 {% for product in best_selling_products[:3] %}
@@ -265,8 +301,10 @@
                         onclick="window.location.href = '/detail-product/{{ product._id }}'">
                         <img src="../static/imgProduct/{{ product.gambar_produk[0] }}" alt="{{ product.nama_produk }}">
                         <h5 class="mt-3 text-center fw-bold">{{ product.nama_produk | truncate(45, True, '...') }}</h5>
-                        <p class="text-secondary" style="text-align: justify;">{{ product.deskripsi_produk | truncate(115, True, '...') }}</p>
-                        <p class="text-center" style="font-size: 18px;"><strong>Rp. {{ product.harga_produk }}</strong></p>
+                        <p class="text-secondary" style="text-align: justify;">{{ product.deskripsi_produk |
+                            truncate(115, True, '...') }}</p>
+                        <p class="text-center" style="font-size: 18px;"><strong>Rp. {{ product.harga_produk }}</strong>
+                        </p>
                     </div>
                 </div>
                 {% endfor %}
