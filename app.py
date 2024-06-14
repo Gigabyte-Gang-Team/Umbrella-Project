@@ -342,14 +342,28 @@ def add_to_cart():
 
         # Cari apakah user_id sudah ada di database carts
         existing_cart = db.carts.find_one({'user_id': user_id})
+
         if existing_cart:
-            # Update keranjang yang sudah ada
-            db.carts.update_one(
-                {'user_id': user_id},
-                {'$push': {'items': cart_item}}
-            )
+            # Cek apakah product_id sudah ada di items di dalam keranjang
+            product_exists_in_cart = False
+            for item in existing_cart['items']:
+                if item['product_id'] == str(product_id):
+                    # Jika product_id sudah ada, tambahkan quantity
+                    db.carts.update_one(
+                        {'user_id': user_id, 'items.product_id': str(product_id)},
+                        {'$inc': {'items.$.quantity': quantity}}
+                    )
+                    product_exists_in_cart = True
+                    break
+
+            if not product_exists_in_cart:
+                # Jika product_id belum ada, tambahkan sebagai item baru
+                db.carts.update_one(
+                    {'user_id': user_id},
+                    {'$push': {'items': cart_item}}
+                )
         else:
-            # Buat keranjang baru
+            # Buat keranjang baru jika belum ada
             db.carts.insert_one({
                 'user_id': user_id,
                 'items': [cart_item]
