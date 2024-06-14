@@ -99,6 +99,8 @@ def login():
 
 @app.route('/logout')
 def logout():
+    session.clear()
+    
     resp = make_response(redirect(url_for('home')))
     resp.delete_cookie(TOKEN_KEY)
     return resp
@@ -121,6 +123,9 @@ def sign_in():
 
         resp = make_response(jsonify({"result": "success", "token": token}))
         resp.set_cookie(TOKEN_KEY, token, httponly=True, samesite='Lax')
+
+        session['user_id'] = str(result['_id'])
+        
         return resp
     else:
         return jsonify({"result": "fail", "msg": "We could not find a user with that id/password combination"})
@@ -393,7 +398,7 @@ def cart():
     if 'user_id' not in session:
         return redirect(url_for('login'))
 
-    user_id = session['user_id']
+    user_id = session.get('user_id') or str(user_info['_id'])
     user_id_obj = ObjectId(user_id)  # Konversi user_id dari string ke ObjectId
     cart = db.carts.find_one({"user_id": user_id_obj})
 
