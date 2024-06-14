@@ -309,6 +309,48 @@ def detail_product(product_id):
     best_selling_products = db.products.find().sort("total_pembelian", -1)
 
     return render_template('detail-product.html', product=product, best_selling_products=best_selling_products, is_logged_in=is_logged_in, user_info=user_info)
+
+@app.route('/add-to-cart', methods=['POST'])
+def add_to_cart():
+    data = request.json
+    user_id = data.get('user_id')
+    product_id = data.get('product_id')
+    quantity = data.get('quantity', 1)
+    note = data.get('note', '')
+
+    # Validasi data
+    if not user_id or not product_id:
+        return jsonify({'message': 'User ID dan Product ID diperlukan!'}), 400
+
+    try:
+        user_id = ObjectId(user_id)  # Pastikan user_id adalah ObjectId
+        product_id = ObjectId(product_id)  # Pastikan product_id adalah ObjectId
+
+        cart_item = {
+            'product_id': str(product_id),
+            'quantity': quantity,
+            'note': note,
+            'added_at': datetime.now()  # Menggunakan datetime.now() untuk waktu saat ini
+        }
+
+        # Cari apakah user_id sudah ada di database carts
+        existing_cart = db.carts.find_one({'user_id': user_id})
+        if existing_cart:
+            # Update keranjang yang sudah ada
+            db.carts.update_one(
+                {'user_id': user_id},
+                {'$push': {'items': cart_item}}
+            )
+        else:
+            # Buat keranjang baru
+            db.carts.insert_one({
+                'user_id': user_id,
+                'items': [cart_item]
+            })
+
+        return jsonify({'message': 'Produk berhasil ditambahkan ke keranjang!'}), 200
+    except Exception as e:
+        return jsonify({'message': 'Terjadi kesalahan: ' + str(e)}), 500
     
 # Products, Detail & All End
 
@@ -328,20 +370,82 @@ def purchase():
 
     return render_template('purchase.html', is_logged_in=True, user_info=user_info) 
 
+# Cart Start
 @app.route('/cart')
 def cart():
+    #   navbar profile
     token_receive = request.cookies.get(TOKEN_KEY)
-    
-    if not ('user_id' in session or token_receive):
-        return redirect(url_for('login'))  
+    user_info = None
 
-    try:
-        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-        user_info = db.users.find_one({'email': payload.get('id')})
-    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
-        user_info = None
+    if token_receive:
+        try:
+            payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+            user_info = db.users.find_one({'email': payload.get('id')})
+        except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+            pass
 
-    return render_template('cart.html', is_logged_in=True, user_info=user_info) 
+    is_logged_in = 'user_id' in session or user_info is not None
+#   navbar profile end
+
+    # Cek apakah user sudah login
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    user_id = session['user_id']
+    user_id_obj = ObjectId(user_id)  # Konversi user_id dari string ke ObjectId
+    cart = db.carts.find_one({"user_id": user_id_obj})
+
+    if not cart or 'items' not in cart:
+        return render_template('cart.html', items=[], total=0)
+
+    items = []
+    total_price = 0
+
+    for item in cart['items']:
+        product = db.products.find_one({"_id": ObjectId(item['product_id'])})
+        if product:
+            product_price = product['harga_produk']
+            total_price += product_price * item['quantity']
+            items.append({
+                'product_id': str(product['_id']),
+                'nama_produk': product['nama_produk'],
+                'gambar_produk': product['gambar_produk'][0],
+                'quantity': item['quantity'],
+                'price': product_price,
+                'total_price': product_price * item['quantity'],
+                'note': item['note']
+            })
+
+    return render_template('cart.html', items=items, total=total_price, is_logged_in=is_logged_in, user_info=user_info)
+
+@app.route('/cart/delete/<product_id>', methods=['POST'])
+def delete_item(product_id):
+    if request.method == 'POST':
+        # Ambil user_id dari session dan konversi ke ObjectId
+        user_id = session['user_id']
+        user_id_obj = ObjectId(user_id)  # Konversi user_id dari string ke ObjectId
+        
+        # Cari keranjang belanja berdasarkan user_id
+        cart = db.carts.find_one({"user_id": user_id_obj})
+        
+        # Temukan index item dalam keranjang belanja
+        index_to_remove = None
+        for index, item in enumerate(cart['items']):
+            if item['product_id'] == product_id:
+                index_to_remove = index
+                break
+        
+        if index_to_remove is not None:
+            # Hapus item dari objek "items"
+            db.carts.update_one(
+                {"user_id": user_id_obj},
+                {"$pull": {"items": {"product_id": product_id}}}
+            )
+            return jsonify({'success': True}), 200
+        else:
+            # Jika item tidak ditemukan
+            return jsonify({'success': False, 'error': 'Item not found'}), 404
+# Cart End
 
 @app.route('/update_profile', methods=['GET', 'POST'])
 def update():
