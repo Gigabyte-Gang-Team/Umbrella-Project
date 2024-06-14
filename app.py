@@ -32,6 +32,8 @@ TOKEN_KEY = os.environ.get("TOKEN_KEY")
 
 app = Flask(__name__)
 
+app.secret_key = SECRET_KEY
+
 @app.route('/', methods=['GET','POST'])
 def home():
 #   navbar profile
