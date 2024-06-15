@@ -1,3 +1,4 @@
+import locale
 from flask import Flask, redirect, url_for, render_template, request, jsonify, make_response, session
 from pymongo import MongoClient
 import requests
@@ -33,6 +34,15 @@ TOKEN_KEY = os.environ.get("TOKEN_KEY")
 app = Flask(__name__)
 
 app.secret_key = SECRET_KEY
+
+# Set locale to Indonesian
+locale.setlocale(locale.LC_ALL, 'id_ID.UTF-8')
+
+# Define a custom filter
+@app.template_filter('rupiah')
+def format_rupiah(value):
+    rupiah_value = locale.format_string("%d", value, grouping=True)
+    return f"Rp {rupiah_value}"
 
 @app.route('/', methods=['GET','POST'])
 def home():
@@ -378,18 +388,54 @@ def add_to_cart():
 @app.route('/purchase')
 #fungsi wajib login
 def purchase():
+    # Mendapatkan token dari cookie
     token_receive = request.cookies.get(TOKEN_KEY)
+    user_info = None
+
+    if token_receive:
+        try:
+            # Decode token untuk mendapatkan informasi pengguna
+            payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+            user_info = db.users.find_one({'email': payload.get('id')})
+        except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+            pass
+
+    # Mengecek apakah pengguna sudah login
+    is_logged_in = 'user_id' in session or user_info is not None
     
-    if not ('user_id' in session or token_receive):
-        return redirect(url_for('login'))  
+    # Redirect ke halaman login jika pengguna belum login
+    if 'user_id' not in session and user_info is None:
+        return redirect(url_for('login'))
 
-    try:
-        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-        user_info = db.users.find_one({'email': payload.get('id')})
-    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
-        user_info = None
+    # Mendapatkan user_id dari session atau token
+    user_id = session.get('user_id') or str(user_info['_id'])
+    user_id_obj = ObjectId(user_id)  # Konversi user_id dari string ke ObjectId
+    
+    # Mengambil keranjang pengguna dari database
+    cart = db.carts.find_one({"user_id": user_id_obj})
+    
+    # Jika keranjang kosong atau tidak ada item, tampilkan halaman keranjang kosong
+    if not cart or 'items' not in cart:
+        return render_template('cart.html', items=[], total=0, empty_cart = True)
 
-    return render_template('purchase.html', is_logged_in=True, user_info=user_info) 
+    items = []
+
+    for item in cart['items']:
+        product = db.products.find_one({"_id": ObjectId(item['product_id'])})
+        if product:
+            product_price = product['harga_produk']
+            items.append({
+                'product_id': str(product['_id']),
+                'nama_produk': product['nama_produk'],
+                'gambar_produk': product['gambar_produk'][0],
+                'quantity': item['quantity'],
+                'price': product_price,
+                'total_price': product_price * item['quantity'],
+                'note': item['note']
+            })
+        
+    # Mengirim data keranjang dan informasi login ke template
+    return render_template('purchase.html', items = items, is_logged_in=is_logged_in, user_info=user_info) 
 
 # Cart Start
 @app.route('/cart')

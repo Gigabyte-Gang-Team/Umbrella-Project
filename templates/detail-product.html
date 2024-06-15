@@ -178,7 +178,7 @@
                                 {{ product.total_pembelian }} terjual | Brand: <strong>{{ product.merk_produk
                                     }}</strong></p>
                             <h5 class="fw-bold mb-3 fs-3 py-2 px-2 border rounded" style="background-color: #81E4FF;">
-                                <span class="fs-5 px-1">Rp</span>{{ product.harga_produk }}
+                                <span class="fs-5 px-1"></span>{{ product.harga_produk | rupiah }}
                             </h5>
                             <p class="mb-3"><i class="fas fa-map-marked-alt px-2"></i>Dikirim dari
                                 <strong>Surabaya</strong>
@@ -303,7 +303,7 @@
                         <h5 class="mt-3 text-center fw-bold">{{ product.nama_produk | truncate(45, True, '...') }}</h5>
                         <p class="text-secondary" style="text-align: justify;">{{ product.deskripsi_produk |
                             truncate(115, True, '...') }}</p>
-                        <p class="text-center" style="font-size: 18px;"><strong>Rp. {{ product.harga_produk }}</strong>
+                        <p class="text-center" style="font-size: 18px;"><strong>{{ product.harga_produk | rupiah }}</strong>
                         </p>
                     </div>
                 </div>
