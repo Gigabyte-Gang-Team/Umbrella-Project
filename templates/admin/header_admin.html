@@ -1,78 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <title>Umbrella Projects</title>
 
     <!-- Google Fonts -->
     <link href="https://fonts.gstatic.com" rel="preconnect" />
-    <link
-        href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i"
-        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i|Nunito:300,300i,400,400i,600,600i,700,700i|Poppins:300,300i,400,400i,500,500i,600,600i,700,700i" rel="stylesheet" />
     <link href="../static/assets/img/logo.png" rel="icon" type="image/x-icon" />
 
     <!-- Bootstrap CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM"
-        crossorigin="anonymous"></script>
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous" />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <!-- Javascript CDN -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
 
     <!-- CSS File -->
     <link href="../static/css/admin.css" rel="stylesheet" />
 
-    <!-- Javascript -->
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // Ambil semua elemen nav-link di dalam sidebar
-            const navLinks = document.querySelectorAll("#sidebar-nav .nav-link");
+      document.addEventListener('DOMContentLoaded', function () {
+        // Ambil semua elemen nav-link di dalam sidebar
+        const navLinks = document.querySelectorAll('#sidebar-nav .nav-link');
 
-            // Loop melalui setiap elemen nav-link
-            navLinks.forEach(function (navLink) {
-                // Periksa apakah href dari elemen nav-link cocok dengan URL saat ini
-                if (navLink.getAttribute("href") === window.location.pathname) {
-                    // Tambahkan kelas 'active' ke elemen nav-link yang cocok
-                    navLink.classList.add("active");
-                }
-            });
+        // Loop melalui setiap elemen nav-link
+        navLinks.forEach(function (navLink) {
+          // Periksa apakah href dari elemen nav-link cocok dengan URL saat ini
+          if (navLink.getAttribute('href') === window.location.pathname) {
+            // Tambahkan kelas 'active' ke elemen nav-link yang cocok
+            navLink.classList.add('active');
+          }
         });
+      });
+      function previewPhoto(event) {
+        const reader = new FileReader();
+        reader.onload = function () {
+            const output = document.getElementById('photoPreview');
+            output.src = reader.result;
+        }
+        reader.readAsDataURL(event.target.files[0]);
+    }
+    
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const showButton = document.getElementById('show-sidebar');
+        const content = document.getElementById('main');
+        
+        sidebar.classList.toggle('hidden');
+        showButton.classList.toggle('hidden');
+        content.classList.toggle('fullscreen');
+
+        const card = document.querySelector('.card');
+        if (content.classList.contains('fullscreen')) {
+            card.style.width = '100%';
+        } else {
+            card.style.width = ''; 
+        }
+
+        const mainElement = document.getElementById('main');
+        const footerElement = document.getElementById('footer');
+
+        if (sidebar.classList.contains('hidden')) {
+            mainElement.style.marginLeft = '0';
+            footerElement.style.marginLeft = '0';
+        } else {
+            mainElement.style.marginLeft = '250px';
+            footerElement.style.marginLeft = '250px';
+        }
+    }
     </script>
-</head>
-
-<body>
-    <!-- ======= Header ======= -->
-    <header id="header" class="header fixed-top d-flex align-items-center">
-        <div class="d-flex align-items-center justify-content-between">
-            <h1 style="color: white;">Admin</h1>
-            <i class="bi bi-list toggle-sidebar-btn"></i>
+  </head>
+  <body>
+    <header >
+        <div class="profile-picture-container">
+            <span class="nama">Admin</span>
+            <img id="photoPreview" src="../../static/profile_pics/andi.png" alt="Profile Picture" class="profile-picture" width="80" height="80"
+                onclick="document.getElementById('input-pic').click();" style="cursor: pointer;">
+            <input type="file" id="input-pic" name="file_give" accept="image/*" style="display:none;" onchange="previewPhoto(event)">
         </div>
-        <!-- End Sidebar -->
-
-        <!-- End Icons Navigation -->
     </header>
-    <!-- End Header -->
-
-    <!-- ======= Sidebar ======= -->
+    <button id="show-sidebar" onclick="toggleSidebar()"><i class="navbar-toggler-icon" style="color: black;"></i></button>
     <aside id="sidebar" class="sidebar">
+        </button>
         <ul class="sidebar-nav" id="sidebar-nav">
+            <div class="logo">
+                <img src="../../static/img/Logo-hitam.png" alt="Logo" width="80" height="80">
+            </div>  
             <li class="nav-item">
                 <a class="nav-link" href="/dashboardAdmin">
-                    <i class="bi bi-grid"></i>
+                    <img src="../../static/img/home-icon.png" alt="Products Icon" width="20" height="20">
                     <span>Dashboard</span>
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="/productsAdmin">
-                    <i class="bi bi-grid"></i>
+                    <img src="../../static/img/product-icon.png" alt="Products Icon" width="20" height="20">
                     <span>Products</span>
+                </a>    
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/usersAdmin">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-people-fill " viewBox="0 0 20 20">
+                        <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6m-5.784 6A2.24 2.24 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.3 6.3 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1zM4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5"/>
+                        </svg>
+                    <span>Users</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/logout/admin">
+                    <img src="../../static/img/logout-icon.png" alt="Products Icon" width="20" height="20">
+                    <span>Logout</span>
                 </a>
             </li>
         </ul>
     </aside>
-    <!-- End Sidebar-->
-</body>
-
+    <div class="content">
+    </div>
+  </body>
 </html>
