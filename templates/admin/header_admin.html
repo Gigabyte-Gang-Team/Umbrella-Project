@@ -64,22 +64,34 @@
             mainElement.style.marginLeft = '0';
             footerElement.style.marginLeft = '0';
         } else {
-            mainElement.style.marginLeft = '250px';
-            footerElement.style.marginLeft = '250px';
+            mainElement.style.marginLeft = '300px';
+            footerElement.style.marginLeft = '300px';
         }
     }
     </script>
   </head>
   <body>
-    <header >
-        <div class="profile-picture-container">
-            <span class="nama">Admin</span>
-            <img id="photoPreview" src="../../static/profile_pics/andi.png" alt="Profile Picture" class="profile-picture" width="80" height="80"
-                onclick="document.getElementById('input-pic').click();" style="cursor: pointer;">
-            <input type="file" id="input-pic" name="file_give" accept="image/*" style="display:none;" onchange="previewPhoto(event)">
-        </div>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light custom-navbar " style="background-color: #0587AA";>
+            <div class="container-fluid">
+                <div class="d-flex align-items-center">
+                    <a class="navbar-brand nama" href="#">
+                        Umbrella Projects
+                    </a>
+                    <span id="show-sidebar" class="navbar-toggler-icon" onclick="toggleSidebar()" ></span>
+                    
+                </div>
+                <div class="collapse navbar-collapse" >
+                    <div class="ms-auto d-flex align-items-center">
+                        <span class="navbar-text me-2 d-flex align-items-center namaAdmin">Admin</span>
+                        <img id="photoPreview" src="../../static/img/andi.png" alt="Profile Picture" class="profile-picture rounded-circle d-none d-lg-flex" width="40" height="40" onclick="document.getElementById('input-pic').click();" style="cursor: pointer;">
+                        <input type="file" id="input-pic" name="file_give" accept="image/*" style="display:none;" onchange="previewPhoto(event)">
+                    </div>
+                </div>
+            </div>
+        </nav>
     </header>
-    <button id="show-sidebar" onclick="toggleSidebar()"><i class="navbar-toggler-icon" style="color: black;"></i></button>
+
     <aside id="sidebar" class="sidebar">
         </button>
         <ul class="sidebar-nav" id="sidebar-nav">
@@ -96,7 +108,7 @@
                 <a class="nav-link" href="/productsAdmin">
                     <img src="../../static/img/product-icon.png" alt="Products Icon" width="20" height="20">
                     <span>Products</span>
-                </a>    
+                </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="/usersAdmin">
