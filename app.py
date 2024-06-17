@@ -1,5 +1,5 @@
 import locale
-from flask import Flask, redirect, url_for, render_template, request, jsonify, make_response, session
+from flask import Flask, json, logging, redirect, url_for, render_template, request, jsonify, make_response, session
 from pymongo import MongoClient
 import requests
 from datetime import datetime, timedelta
@@ -88,7 +88,11 @@ def search():
 
     is_logged_in = 'user_id' in session or user_info is not None
     #   navbar profile end
-    query = request.args.get('query', '')
+
+    query = request.args.get('query', '').strip()  
+    if not query:
+        return render_template('search_results.html', products=[], query='', is_logged_in=is_logged_in, user_info=user_info)
+    
     regex = re.compile(f".*{query}.*", re.IGNORECASE)
     search_results_cursor = db.products.find({"nama_produk": regex})
     search_results = list(search_results_cursor)
@@ -359,9 +363,16 @@ def add_to_cart():
             for item in existing_cart['items']:
                 if item['product_id'] == str(product_id):
                     # Jika product_id sudah ada, tambahkan quantity
+                    # db.carts.update_one(
+                    #     {'user_id': user_id, 'items.product_id': str(product_id)},
+                    #     {'$inc': {'items.$.quantity': quantity}, "$set": {"items.$.note": note}},
+                    # )
+                    update_fields = {'$inc': {'items.$.quantity': quantity}}
+                    if note != '':
+                        update_fields['$set'] = {'items.$.note': note}
                     db.carts.update_one(
                         {'user_id': user_id, 'items.product_id': str(product_id)},
-                        {'$inc': {'items.$.quantity': quantity}}
+                        update_fields
                     )
                     product_exists_in_cart = True
                     break
@@ -383,9 +394,141 @@ def add_to_cart():
     except Exception as e:
         return jsonify({'message': 'Terjadi kesalahan: ' + str(e)}), 500
     
+
+@app.route('/buy-now', methods=['POST'])
+def buy_now():
+    data = request.json
+    user_id = data.get('user_id')
+    product_id = data.get('product_id')
+    quantity = data.get('quantity', 1)
+    note = data.get('note', '')
+
+    # Validasi data
+    if not user_id or not product_id:
+        return jsonify({'message': 'User ID dan Product ID diperlukan!'}), 400
+
+    try:
+        user_id = ObjectId(user_id)  # Pastikan user_id adalah ObjectId
+        product_id = ObjectId(product_id)  # Pastikan product_id adalah ObjectId
+
+        cart_item = {
+            'product_id': str(product_id),
+            'quantity': quantity,
+            'note': note,
+            'added_at': datetime.now()  # Menggunakan datetime.now() untuk waktu saat ini
+        }
+
+        # Cari apakah user_id sudah ada di database carts
+        existing_order = db.orders.find_one({'user_id': user_id})
+
+        if existing_order:
+            # Cek apakah product_id sudah ada di items di dalam keranjang
+            product_exists_in_cart = False
+            for item in existing_order['items']:
+                if item['product_id'] == str(product_id):
+                    # Jika product_id sudah ada, tambahkan quantity
+                    db.orders.update_one(
+                        {'user_id': user_id, 'items.product_id': str(product_id)},
+                        {'$inc': {'items.$.quantity': quantity}}
+                    )
+                    product_exists_in_cart = True
+                    break
+
+            if not product_exists_in_cart:
+                # Jika product_id belum ada, tambahkan sebagai item baru
+                db.orders.update_one(
+                    {'user_id': user_id},
+                    {'$push': {'items': cart_item}}
+                )
+        else:
+            # Buat keranjang baru jika belum ada
+            db.orders.insert_one({
+                'user_id': user_id,
+                'items': [cart_item]
+            })
+
+        return jsonify({'message': 'Produk berhasil dibeli!'}), 200
+    except Exception as e:
+        return jsonify({'message': 'Terjadi kesalahan: ' + str(e)}), 500
+
 # Products, Detail & All End
 
-@app.route('/purchase')
+@app.route('/purchase-buy-now')
+#fungsi wajib login
+def purchaseBuy():
+    # Mendapatkan token dari cookie
+    token_receive = request.cookies.get(TOKEN_KEY)
+    user_info = None
+
+    if token_receive:
+        try:
+            # Decode token untuk mendapatkan informasi pengguna
+            payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+            user_info = db.users.find_one({'email': payload.get('id')})
+        except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+            pass
+
+    # Mengecek apakah pengguna sudah login
+    is_logged_in = 'user_id' in session or user_info is not None
+    
+    # Redirect ke halaman login jika pengguna belum login
+    if 'user_id' not in session and user_info is None:
+        return redirect(url_for('login'))
+
+    # Mendapatkan user_id dari session atau token
+    user_id = session.get('user_id') or str(user_info['_id'])
+    user_id_obj = ObjectId(user_id)  # Konversi user_id dari string ke ObjectId
+    
+    # Mengambil keranjang pengguna dari database
+    order = db.orders.find_one({"user_id": user_id_obj})
+    
+    # Jika keranjang kosong atau tidak ada item, tampilkan halaman keranjang kosong
+    if not order or 'items' not in order:
+        return render_template('detail-product.html', items=[], total=0, empty_cart = True)
+
+    items = []
+
+    for item in order['items']:
+        product = db.products.find_one({"_id": ObjectId(item['product_id'])})
+        if product:
+            product_price = product['harga_produk']
+            items.append({
+                'product_id': str(product['_id']),
+                'nama_produk': product['nama_produk'],
+                'gambar_produk': product['gambar_produk'][0],
+                'quantity': item['quantity'],
+                'price': product_price,
+                'total_price': product_price * item['quantity'],
+                'note': item['note']
+            })
+        
+    # Mengirim data keranjang dan informasi login ke template
+    return render_template('purchase-buy.html', items = items, is_logged_in=is_logged_in, user_info=user_info)
+
+@app.route('/delete-order', methods=['POST'])
+def delete_order():
+    token_receive = request.cookies.get(TOKEN_KEY)
+    user_info = None
+
+    if token_receive:
+        try:
+            payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+            user_info = db.users.find_one({'email': payload.get('id')})
+        except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+            pass
+
+    if 'user_id' not in session and user_info is None:
+        return jsonify({'result': 'error', 'message': 'User not logged in'}), 401
+
+    user_id = session.get('user_id') or str(user_info['_id'])
+    user_id_obj = ObjectId(user_id)
+
+    # Hapus pesanan dari database
+    db.orders.delete_one({"user_id": user_id_obj})
+
+    return jsonify({'result': 'success', 'message': 'Order deleted'}), 200
+
+@app.route('/purchase-cart')
 #fungsi wajib login
 def purchase():
     # Mendapatkan token dari cookie
@@ -435,7 +578,7 @@ def purchase():
             })
         
     # Mengirim data keranjang dan informasi login ke template
-    return render_template('purchase.html', items = items, is_logged_in=is_logged_in, user_info=user_info) 
+    return render_template('purchase-cart.html', items = items, is_logged_in=is_logged_in, user_info=user_info) 
 
 # Cart Start
 @app.route('/cart')
@@ -484,6 +627,36 @@ def cart():
             })
 
     return render_template('cart.html', items=items, total=total_price, is_logged_in=is_logged_in, user_info=user_info)
+
+@app.route('/cart/update', methods=['POST'])
+def update_cart():
+    data = request.get_json()
+    product_id = data['product_id']
+    new_quantity = int(data['quantity'])
+    new_price = float(data['price'])
+
+    token_receive = request.cookies.get('TOKEN_KEY')
+    user_info = None
+
+    if token_receive:
+        try:
+            payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+            user_info = db.users.find_one({'email': payload.get('id')})
+        except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+            return jsonify({'result': 'error', 'message': 'Invalid token'}), 401
+
+    if 'user_id' not in session and user_info is None:
+        return jsonify({'result': 'error', 'message': 'User not logged in'}), 401
+
+    user_id = session.get('user_id') or str(user_info['_id'])
+    user_id_obj = ObjectId(user_id)
+
+    db.carts.update_one(
+        {"user_id": user_id_obj, "items.product_id": product_id},
+        {"$set": {"items.$.quantity": new_quantity, "items.$.price": new_price}}
+    )
+
+    return jsonify({'success': True, 'message': 'Quantity updated successfully'})
 
 @app.route('/cart/delete/<product_id>', methods=['POST'])
 def delete_item(product_id):
@@ -577,8 +750,51 @@ def riwayat():
         user_info = None
     return render_template('history.html', is_logged_in=True, user_info=user_info)
 
-## admin side
-## admin side
+
+# Transaction
+@app.route('/transaction', methods=['POST'])
+def transaction():
+    try: 
+        image_product_receive = request.form['image_product']
+        name_product_receive = request.form['name_product']
+        note_product_receive = request.form['note_product']
+        quantity_product_receive = request.form['quantity_product']
+        price_product_receive = request.form['price_product']
+        
+        if 'bukti_trf_product' not in request.files:
+            return jsonify({'error': 'No file part'}), 400
+
+        file = request.files['bukti_trf_product']
+        if file.filename == '':
+            return jsonify({'error': 'No selected file'}), 400
+
+        if file:
+            filename = file.filename
+            extension = filename.split('.')[-1].lower()
+            if extension not in ['jpg', 'jpeg', 'png', 'gif']:
+                return jsonify({'result': 'error', 'msg': 'Invalid file type'})
+            filepath = f'img_transaction/trf-{uuid.uuid4().hex}.{extension}'
+            save_path = os.path.join('./static/', filepath)
+            
+            file.save(save_path)
+    
+        doc = {
+            "image_product": image_product_receive,                               
+            "name_product": name_product_receive,                                    
+            "note_product": note_product_receive,                                 
+            "quantity_product": quantity_product_receive,                           
+            "price_product": price_product_receive,
+            "bukti_trf_product": filepath,
+            "status_product": "On Process"                                          
+        }
+        
+        db.transaction.insert_one(doc)
+        return jsonify({'result': 'success'})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+# End Transaction
+
+## Admin Side
 @app.route('/login/admin', methods=['GET'])
 def login_admin():
     msg = request.args.get('msg')
