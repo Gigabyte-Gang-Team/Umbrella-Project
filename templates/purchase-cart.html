@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../static/css/style.css">
+    <!-- Font Google -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Logo Title -->
+    <link rel="icon" href="../static/img/Logo.png">
+    <title>Umbrella Project</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <style>
+        .purchase-section {
+            max-width: 1000px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            border-style: solid;
+            border-color: #4A99D3;
+            padding: 20px;
+            border-radius: 24px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 8px;
+        }
+
+        .purchase-section h2 {
+            font-size: 36px;
+            font-weight: 600;
+            text-align: center;
+            padding-bottom: 10px;
+            padding-top: 10px;
+            border-bottom: 1px solid #4A99D3;
+            margin-top: 20px;
+            margin-bottom: 50px;
+        }
+
+        .order-summary {
+            border-top: 1px solid #e0e0e0;
+            padding-top: 20px;
+        }
+
+        .order-summary p {
+            margin: 0;
+        }
+
+        .order-summary .total {
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .payment-method {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .payment-method h4 {
+            margin-bottom: 20px;
+        }
+
+        .bank-info {
+            margin: 20px 0;
+        }
+
+        .bank-info img {
+            max-width: 130px;
+            margin-bottom: 10px;
+        }
+
+        .btn-group {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .btn-group .btn {
+            margin: 0 10px;
+        }
+    </style>
+
+    <script>
+        document.addEventListener('DOMContentLoaded',
+            function () {
+                const priceElements = document.querySelectorAll('[data-price]');
+                let totalPrice = 0;
+
+                priceElements.forEach(priceElement => {
+                    const price = parseInt(priceElement.getAttribute('data-price'));
+                    totalPrice += price;
+                });
+
+                document.getElementById('total-price').innerText = 'Rp ' + totalPrice.toLocaleString('id-ID');
+            });
+
+        function pay_now() {
+            const buktiTransferInput = document.getElementById('buktiTransfer');
+
+            if (buktiTransferInput.files.length === 0) {
+                alert('You must upload proof of transfer first.');
+                return;
+            }
+            const user_id = '{{ user_info["_id"] if user_info else "" }}';
+            if (!user_id) {
+                alert('You must log in before purchasing a product.');
+                return;
+            }
+
+            const items = [];
+            document.querySelectorAll('.product-detail-purchase').forEach(itemElement => {
+                const image_product = itemElement.querySelector('.image-product').getAttribute('src');
+                const name_product = itemElement.querySelector('.name-product').innerText;
+                const note_product = itemElement.querySelector('.note-product').innerText.split(": ")[1];
+                const quantity_product = itemElement.querySelector('.quantity-product').innerText.split(": ")[1];
+                const price_product = itemElement.querySelector('.price-product').getAttribute('data-price');
+
+                items.push({
+                    image_product: image_product,
+                    name_product: name_product,
+                    note_product: note_product,
+                    quantity_product: quantity_product,
+                    price_product: price_product,
+                });
+            });
+
+            //const bukti_trf_product = buktiTransferInput.files[0];
+            let bukti_trf_product = document.getElementById('buktiTransfer').files[0]
+            const formData = new FormData();
+            formData.append('user_id', user_id);
+            formData.append('bukti_trf_product', bukti_trf_product);
+            formData.append('items', JSON.stringify(items));
+
+            $.ajax({
+                type: 'POST',
+                url: '/transaction-cart',
+                data: formData,
+                contentType: false,
+                processData: false,
+                success: function (response) {
+                    alert('your payment is successful');
+                    deleteCartAfterPay();
+                },
+            });
+        }
+
+        function deleteCartAfterPay() {
+            $.ajax({
+                type: 'POST',
+                url: '/delete-cart',
+                success: function (response) {
+                    if (response.result === 'success') {
+                        window.location.replace('/history');
+                    } else {
+                        alert('Failed to delete cart: ' + response.message);
+                    }
+                },
+                error: function (error) {
+                    alert('Error: ' + error.responseText);
+                }
+            });
+        }
+    </script>
+</head>
+
+<body>
+    {% include "header.html" %}
+    <div class="container">
+        <div class="container mt-5">
+            <span onclick="window.history.back()" style="cursor: pointer; opacity: 80%; width: 100px;"><i
+                    class="fas fa-chevron-left px-2"></i>Back</span>
+        </div>
+        <div class="purchase-section">
+            <h2 style="border-top: 1px solid #4A99D3;">Purchase Product</h2>
+            <div class="container" style="margin-top: 50px;">
+                <div class="row justify-content-center">
+                    <div class="col-md-8">
+                        <div class="product-details">
+                            {% for item in items %}
+                            <div class="product-detail-purchase d-flex mb-3">
+                                <img src="../static/imgProduct/{{ item.gambar_produk }}" class="me-3 image-product"
+                                    alt="{{ item.gambar_produk }}"
+                                    style="max-width: 130px; height: 130px; border-radius: 10px;">
+                                <div>
+                                    <h4 class="mt-0 name-product">{{ item.nama_produk | truncate(28, True, '...') }}
+                                    </h4>
+                                    <p><span class="note-product">Note : {{ item.note }}</span><br><br><span
+                                            class="quantity-product">Qty : {{ item.quantity }}</span></p>
+                                </div>
+                                <p class="ms-auto mt-auto price-product" style="font-size: 18px;"
+                                    data-price="{{ item.total_price }}">
+                                    {{ item.total_price | rupiah }}
+                                </p>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="order-summary" style="font-size: 18px;">
+                            <p><b>Order Summary :</b></p>
+                            <ol>
+                                {% for item in items %}
+                                <li>{{ item.nama_produk | truncate(40, True, '...') }} <span class="float-end">{{
+                                        item.total_price | rupiah }}</span></li>
+                                {% endfor %}
+                            </ol>
+                            <hr>
+                            <p class="total">Total <span class="float-end" id="total-price"></span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="payment-method p-3">
+                <h4 style="font-weight: 600; font-size: 28px; padding-top: 40px; border-top: 1px solid #4A99D3;">
+                    <u>Payment Method</u>
+                </h4>
+                <div class="row justify-content-center align-content-center m-3"
+                    style="font-weight: 400; font-size: 16px;">
+                    <div class="col-md-5 bank-info">
+                        <img src="../static/img/img-bank-bca.png" alt="BCA" class="mb-3">
+                        <p>155218921489<br>a/n Umbrella Project</p>
+                    </div>
+                    <div class="col-md-5 bank-info">
+                        <img src="../static/img/img-bank-mandiri.png" alt="Mandiri" class="mb-3">
+                        <p>1234567890<br>a/n Umbrella Project</p>
+                    </div>
+                </div>
+                <div class="p-2 mb-5">
+                    <label for="buktiTransfer" class="form-label "
+                        style="font-weight: 600; font-size: 28px; padding-bottom:20px;"><u>Evidence of
+                            Transfer</u></label>
+                    <input name="bukti-trf" type="file" class="form-control m-auto" id="buktiTransfer"
+                        style="max-width: 500px;" required>
+                </div>
+                <div class="d-flex justify-content-end pt-5">
+                    <button type="button" class="btn me-4" onclick="window.history.back()"
+                        style="font-size: 20px; width: 230px; padding: 15px; font-weight: 500; border: 2px solid #4A99D3; color: #4A99D3;">Back
+                        to Shopping</button>
+                    <button type="button" class="btn" onclick="pay_now()"
+                        style="background-color: #4A99D3; color: #ffffff; font-size: 20px; padding: 15px; width: 230px; font-weight: 500;">Pay
+                        Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% include "footer.html" %}
+</body>
+
+</html>

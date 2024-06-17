@@ -57,14 +57,6 @@
         }
     </style>
     <script>
-        function updatePrice(quantityId, priceId) {
-            const quantityInput = document.getElementById(quantityId);
-            const quantity = quantityInput.value;
-            const pricePerUnit = parseInt(quantityInput.dataset.price);
-            const price = quantity * pricePerUnit;
-            document.getElementById(priceId).innerText = 'Rp ' + price.toLocaleString('id-ID');
-        }
-
         function decreaseQuantity(quantityId, priceId) {
             const quantityInput = document.getElementById(quantityId);
             let currentQuantity = parseInt(quantityInput.value);
@@ -91,11 +83,38 @@
                 });
         }
 
-        document.addEventListener('DOMContentLoaded', function () {
-            {% if empty_cart %}
-                alert('Tidak terdapat barang di keranjang');
-            {% endif %}
-        });
+        function updatePrice(quantityId, priceId) {
+            const quantityInput = document.getElementById(quantityId);
+            const quantity = quantityInput.value;
+            const pricePerUnit = parseInt(quantityInput.dataset.price);
+            const price = quantity * pricePerUnit;
+            document.getElementById(priceId).innerText = 'Rp ' + price.toLocaleString('id-ID');
+
+            // Ambil productId dari attribute data-product-id
+            const productId = quantityInput.getAttribute('data-product-id');
+
+            // Kirim permintaan update ke server
+            fetch('/cart/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    product_id: productId,
+                    quantity: quantity,
+                    price: price
+                })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (!data.success) {
+                        alert('Failed to update quantity: ' + data.message);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        }
     </script>
 </head>
 
@@ -103,7 +122,7 @@
     {% include "header.html" %}
     <div class="container mt-2">
         <span onclick="window.history.back()" style="cursor: pointer; opacity: 80%; width: 100px;"><i
-            class="fas fa-chevron-left px-2"></i>Back</span>
+                class="fas fa-chevron-left px-2"></i>Back</span>
         <h2 class="text-center p-2" style="font-size: 36px; font-weight: 600;">Shopping Cart</h2>
         <hr>
     </div>
@@ -124,7 +143,7 @@
             <div class="detail-product">
                 <h4>{{ item.nama_produk | truncate(40, True, '...') }}</h4>
                 <div style="font-size: 18px;">
-                    <span>Pesan : </span>
+                    <span>Note : </span>
                     <p>{{ item.note }}</p>
                     <div class="quantity-container">
                         <label for="quantity-{{ loop.index }}" style="margin-right: 10px; font-size: 18px;">Quantity
@@ -133,6 +152,7 @@
                             onclick="decreaseQuantity('quantity-{{ loop.index }}', 'price-{{ loop.index }}')">-</button>
                         <input type="number" id="quantity-{{ loop.index }}" class="quantity-input"
                             value="{{ item.quantity }}" min="1" data-price="{{ item.price }}"
+                            data-product-id="{{ item.product_id }}"
                             onchange="updatePrice('quantity-{{ loop.index }}', 'price-{{ loop.index }}')">
                         <button type="button" class="quantity-button"
                             onclick="increaseQuantity('quantity-{{ loop.index }}', 'price-{{ loop.index }}')">+</button>
@@ -153,7 +173,7 @@
             style="font-size: 20px; width: 230px; padding: 15px; font-weight: 500; border: 2px solid #4A99D3; color: #4A99D3;">Back
             to Shopping</button>
         {% if items|length > 0 %}
-        <button type="button" class="btn" onclick="window.location.href = '/purchase'"
+        <button type="button" class="btn" onclick="window.location.href = '/purchase-cart'"
             style="background-color: #4A99D3; color: #ffffff; font-size: 20px; padding: 15px; width: 230px; font-weight: 500;">Purchase
             All</button>
         {% endif %}
