@@ -104,6 +104,42 @@
                 }
             });
         }
+
+        function buyNow() {
+            const product_id = '{{ product._id }}';  // Pastikan product._id adalah string
+            const user_id = '{{ user_info["_id"] if user_info else "" }}';  // Pastikan user_info["_id"] adalah string
+            const quantity = parseInt(document.getElementById('quantityInput').value);
+            const note = document.querySelector('textarea.form-control').value;
+
+            if (!user_id) {
+                alert('Anda harus login sebelum membeli produk.');
+                return;
+            }
+
+            const data = {
+                user_id: user_id,
+                product_id: product_id,
+                quantity: quantity,
+                note: note
+            };
+
+            console.log('Data yang dikirim:', data);
+
+            $.ajax({
+                url: '/buy-now',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function (response) {
+                    alert(response.message);
+                    window.location.href = '/purchase-buy-now';
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error dari server:', error);
+                    alert('Gagal membeli produk.');
+                }
+            });
+        }
     </script>
 
 </head>
@@ -224,7 +260,7 @@
                                     <div class="d-flex mt-2" style="justify-content: space-around;">
                                         <button onclick="addToCart()"
                                             class="btn-all-products rounded px-5 p-2 mb-1 mt-3">Add to Cart</button>
-                                        <button onclick="window.location.href = '/purchase';"
+                                        <button onclick="buyNow()"
                                             class="btn-all-products rounded px-5 p-2 mb-1 mt-3 fw-bold">Buy Now</button>
                                     </div>
                                 </div>
