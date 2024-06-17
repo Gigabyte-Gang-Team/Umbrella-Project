@@ -108,7 +108,11 @@
                 alert('You must upload proof of transfer first.');
                 return;
             }
-
+            const user_id = '{{ user_info["_id"] if user_info else "" }}';
+            if (!user_id) {
+                alert('You must log in before purchasing a product.');
+                return;
+            }
             // Mengambil nilai dari elemen-elemen HTML
             let image_product = document.getElementById('image-product').getAttribute('src');
             let name_product = document.getElementById('name-product').innerText;
@@ -119,6 +123,7 @@
 
             // Membuat FormData untuk dikirimkan via AJAX
             let formData = new FormData();
+            formData.append('user_id', user_id);
             formData.append('image_product', image_product);
             formData.append('name_product', name_product);
             formData.append('note_product', note_product);

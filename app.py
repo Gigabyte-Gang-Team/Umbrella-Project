@@ -754,7 +754,13 @@ def riwayat():
 # Transaction
 @app.route('/transaction', methods=['POST'])
 def transaction():
-    try: 
+    try:
+        user_id = request.form.get('user_id')
+
+        if not user_id:
+            return jsonify({'message': 'User ID diperlukan!'}), 400
+
+        user_id = ObjectId(user_id)
         image_product_receive = request.form['image_product']
         name_product_receive = request.form['name_product']
         note_product_receive = request.form['note_product']
@@ -777,15 +783,22 @@ def transaction():
             save_path = os.path.join('./static/', filepath)
             
             file.save(save_path)
+        
+        ordered_at = datetime.now()
+        formatted_date = ordered_at.strftime("%d-%m-%Y")
+        formatted_time = ordered_at.strftime("%H:%M:%S")
     
         doc = {
+            "user_id": user_id,
             "image_product": image_product_receive,                               
             "name_product": name_product_receive,                                    
             "note_product": note_product_receive,                                 
             "quantity_product": quantity_product_receive,                           
             "price_product": price_product_receive,
             "bukti_trf_product": filepath,
-            "status_product": "On Process"                                          
+            "status_product": "On Process",
+            "ordered_date" : formatted_date,
+            "ordered_time" : formatted_time,               
         }
         
         db.transaction.insert_one(doc)
