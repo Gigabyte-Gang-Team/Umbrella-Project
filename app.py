@@ -528,6 +528,29 @@ def delete_order():
 
     return jsonify({'result': 'success', 'message': 'Order deleted'}), 200
 
+@app.route('/delete-cart', methods=['POST'])
+def delete_cart():
+    token_receive = request.cookies.get(TOKEN_KEY)
+    user_info = None
+
+    if token_receive:
+        try:
+            payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+            user_info = db.users.find_one({'email': payload.get('id')})
+        except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+            pass
+
+    if 'user_id' not in session and user_info is None:
+        return jsonify({'result': 'error', 'message': 'User not logged in'}), 401
+
+    user_id = session.get('user_id') or str(user_info['_id'])
+    user_id_obj = ObjectId(user_id)
+
+    # Hapus pesanan dari database
+    db.carts.update_one({"user_id": user_id_obj}, {"$set": {"items": []}})
+
+    return jsonify({'result': 'success', 'message': 'Order deleted'}), 200
+
 @app.route('/purchase-cart')
 #fungsi wajib login
 def purchase():
@@ -750,9 +773,8 @@ def riwayat():
         user_info = None
     return render_template('history.html', is_logged_in=True, user_info=user_info)
 
-
-# Transaction
-@app.route('/transaction', methods=['POST'])
+# Transaction Order Per Product
+@app.route('/transaction-order', methods=['POST'])
 def transaction():
     try:
         user_id = request.form.get('user_id')
@@ -805,7 +827,62 @@ def transaction():
         return jsonify({'result': 'success'})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-# End Transaction
+# End Transaction Order
+
+# Transaction Cart
+@app.route('/transaction-cart', methods=['POST'])
+def transaction_cart():
+    try:
+        user_id = request.form.get('user_id')
+        items = request.form.get('items')
+        bukti_trf_product = request.files['bukti_trf_product']
+
+        if not user_id or not items or not bukti_trf_product:
+            return jsonify({'error': 'User ID, items, or proof of transfer is missing!'}), 400
+
+        items = json.loads(items)
+        user_id_obj = ObjectId(user_id)
+        
+        if bukti_trf_product.filename == '':
+            return jsonify({'error': 'No selected file'}), 400
+
+        if bukti_trf_product:
+            filename = bukti_trf_product.filename
+            extension = filename.split('.')[-1].lower()
+            if extension not in ['jpg', 'jpeg', 'png', 'gif']:
+                return jsonify({'error': 'Invalid file type'}), 400
+            filepath = f'img_transaction/trf-{uuid.uuid4().hex}.{extension}'
+            save_path = os.path.join('./static/', filepath)
+            
+            bukti_trf_product.save(save_path)
+        
+        ordered_at = datetime.now()
+        formatted_date = ordered_at.strftime("%d-%m-%Y")
+        formatted_time = ordered_at.strftime("%H:%M:%S")
+        
+        transactions = []
+        for item in items:
+            transactions.append({
+                'user_id': user_id_obj,
+                'image_product': item.get('image_product', ''),
+                'name_product': item.get('name_product', ''),
+                'note_product': item.get('note_product', ''),
+                'quantity_product': item.get('quantity_product', ''),
+                'price_product': item.get('price_product', ''),
+                'bukti_trf_product': filepath,
+                "ordered_date" : formatted_date,
+                "ordered_time" : formatted_time,  
+            })
+        
+        db.transaction.insert_many(transactions)
+        return jsonify({'result': 'success'})
+    
+    except KeyError as e:
+        return jsonify({'error': f'Missing key in request: {str(e)}'}), 400
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+# End Transaction Cart
 
 ## Admin Side
 @app.route('/login/admin', methods=['GET'])

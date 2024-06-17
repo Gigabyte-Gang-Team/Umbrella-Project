@@ -133,7 +133,7 @@
 
             $.ajax({
                 type: 'POST',
-                url: '/transaction',
+                url: '/transaction-order',
                 data: formData,
                 contentType: false,
                 processData: false,
@@ -177,6 +177,10 @@
                 }
             });
         }
+
+        window.addEventListener('beforeunload', function (event) {
+            deleteOrderAndGoBack();
+        });
     </script>
 </head>
 

@@ -114,63 +114,52 @@
                 return;
             }
 
-            // Mengambil nilai dari elemen-elemen HTML
-            let image_product = document.getElementById('image-product').getAttribute('src');
-            let name_product = document.getElementById('name-product').innerText;
-            let note_product = document.getElementById('note-product').innerText.split(": ")[1];
-            let quantity_product = document.getElementById('quantity-product').innerText.split(": ")[1];
-            let price_product = document.getElementById('price-product').getAttribute('data-price');
-            let bukti_trf_product = document.getElementById('buktiTransfer').files[0]
+            const items = [];
+            document.querySelectorAll('.product-detail-purchase').forEach(itemElement => {
+                const image_product = itemElement.querySelector('.image-product').getAttribute('src');
+                const name_product = itemElement.querySelector('.name-product').innerText;
+                const note_product = itemElement.querySelector('.note-product').innerText.split(": ")[1];
+                const quantity_product = itemElement.querySelector('.quantity-product').innerText.split(": ")[1];
+                const price_product = itemElement.querySelector('.price-product').getAttribute('data-price');
 
-            // Membuat FormData untuk dikirimkan via AJAX
-            let formData = new FormData();
+                items.push({
+                    image_product: image_product,
+                    name_product: name_product,
+                    note_product: note_product,
+                    quantity_product: quantity_product,
+                    price_product: price_product,
+                });
+            });
+
+            //const bukti_trf_product = buktiTransferInput.files[0];
+            let bukti_trf_product = document.getElementById('buktiTransfer').files[0]
+            const formData = new FormData();
             formData.append('user_id', user_id);
-            formData.append('image_product', image_product);
-            formData.append('name_product', name_product);
-            formData.append('note_product', note_product);
-            formData.append('quantity_product', quantity_product);
-            formData.append('price_product', price_product);
             formData.append('bukti_trf_product', bukti_trf_product);
+            formData.append('items', JSON.stringify(items));
 
             $.ajax({
                 type: 'POST',
-                url: '/transaction',
+                url: '/transaction-cart',
                 data: formData,
                 contentType: false,
                 processData: false,
                 success: function (response) {
                     alert('your payment is successful');
-                    deleteOrderAfterPay()
+                    deleteCartAfterPay();
                 },
-            })
-        }
-
-        function deleteOrderAndGoBack() {
-            $.ajax({
-                type: 'POST',
-                url: '/delete-order',
-                success: function (response) {
-                    if (response.result === 'success') {
-                        window.history.back();
-                    } else {
-                        alert('Failed to delete order: ' + response.message);
-                    }
-                },
-                error: function (error) {
-                    alert('Error: ' + error.responseText);
-                }
             });
         }
 
-        function deleteOrderAfterPay() {
+        function deleteCartAfterPay() {
             $.ajax({
                 type: 'POST',
-                url: '/delete-order',
+                url: '/delete-cart',
                 success: function (response) {
                     if (response.result === 'success') {
                         window.location.replace('/history');
                     } else {
-                        alert('Failed to delete order: ' + response.message);
+                        alert('Failed to delete cart: ' + response.message);
                     }
                 },
                 error: function (error) {
@@ -196,17 +185,16 @@
                         <div class="product-details">
                             {% for item in items %}
                             <div class="product-detail-purchase d-flex mb-3">
-                                <img src="../static/imgProduct/{{ item.gambar_produk }}" class="me-3"
-                                    alt="{{ item.gambar_produk }}" id="image-product"
+                                <img src="../static/imgProduct/{{ item.gambar_produk }}" class="me-3 image-product"
+                                    alt="{{ item.gambar_produk }}"
                                     style="max-width: 130px; height: 130px; border-radius: 10px;">
                                 <div>
-                                    <h4 class="mt-0" id="name-product">{{ item.nama_produk | truncate(28, True, '...')
-                                        }}</h4>
-                                    <p><span id="note-product">Note : {{ item.note }}</span><br><br><span
-                                            id="quantity-product">Qty :
-                                            {{ item.quantity }}</span></p>
+                                    <h4 class="mt-0 name-product">{{ item.nama_produk | truncate(28, True, '...') }}
+                                    </h4>
+                                    <p><span class="note-product">Note : {{ item.note }}</span><br><br><span
+                                            class="quantity-product">Qty : {{ item.quantity }}</span></p>
                                 </div>
-                                <p id="price-product" class="ms-auto mt-auto" style="font-size: 18px;"
+                                <p class="ms-auto mt-auto price-product" style="font-size: 18px;"
                                     data-price="{{ item.total_price }}">
                                     {{ item.total_price | rupiah }}
                                 </p>
