@@ -93,7 +93,7 @@
                                         <div class="card-head-price p-4">
                                             <h6>{{ item.nama_produk | truncate(47, True, '...') }}</h6>
                                             <div class="d-flex justify-content-between align-items-center">
-                                                <p class="fs-5 fw-bold mb-0">Rp. {{ item.harga_produk }}</p>
+                                                <p class="fs-5 fw-bold mb-0">{{ item.harga_produk | rupiah }}</p>
                                                 <a href="#"
                                                     class="btn-tagline border border-secondary rounded-pill px-3 mt-1"><i
                                                         class="fa fa-shopping-bag"
@@ -136,7 +136,7 @@
                                         <div class="card-head-price p-4">
                                             <h6>{{ product.nama_produk | truncate(47, True, '...') }}</h6>
                                             <div class="d-flex justify-content-between flex-lg-wrap">
-                                                <p class="fs-5 fw-bold mb-0">Rp. {{ product.harga_produk }}</p>
+                                                <p class="fs-5 fw-bold mb-0">{{ product.harga_produk | rupiah }}</p>
                                                 <a href="#"
                                                     class="btn-tagline border border-secondary rounded-pill px-3 mt-1"><i
                                                         class="fa fa-shopping-bag"
