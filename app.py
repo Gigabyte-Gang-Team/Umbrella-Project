@@ -787,7 +787,7 @@ def transaction():
         name_product_receive = request.form['name_product']
         note_product_receive = request.form['note_product']
         quantity_product_receive = request.form['quantity_product']
-        price_product_receive = request.form['price_product']
+        price_product_receive = int(request.form['price_product'])
         
         if 'bukti_trf_product' not in request.files:
             return jsonify({'error': 'No file part'}), 400
@@ -868,7 +868,7 @@ def transaction_cart():
                 'name_product': item.get('name_product', ''),
                 'note_product': item.get('note_product', ''),
                 'quantity_product': item.get('quantity_product', ''),
-                'price_product': item.get('price_product', ''),
+                'price_product': int(item.get('price_product', '')),
                 'bukti_trf_product': filepath,
                 "status_product": "On Process",
                 "ordered_date" : formatted_date,
