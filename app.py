@@ -1107,7 +1107,7 @@ def editProduct(_id):
         }
         db.products.update_one({'_id': ObjectId(_id)}, {'$set': doc})
         
-        return redirect(url_for('products'))
+        return redirect(url_for('productsAdmin'))
     
     # Mendapatkan produk yang akan diedit
     product = db.products.find_one({'_id': ObjectId(_id)})
@@ -1143,7 +1143,7 @@ def deleteImage(_id):
 @app.route('/deleteProduct/<string:_id>', methods=["GET", "POST"])
 def deleteProduct(_id):
     db.products.delete_one({'_id': ObjectId(_id)})
-    return redirect(url_for('products'))
+    return redirect(url_for('productsAdmin'))
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)
