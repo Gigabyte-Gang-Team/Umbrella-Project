@@ -1,33 +1,317 @@
 {% include "admin/header_admin.html" %}
 <main id="main" class="main">
-  <!-- End Page Title -->
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      console.log("Document fully loaded and parsed."); // Log untuk menandakan bahwa dokumen telah dimuat
+
+      // Function to open modal and fetch order details
+      function openModal(orderId, userId) {
+        console.log("Modal opened with Order ID:", orderId, "and User ID:", userId);
+
+        // Fetch request to get order details
+        fetch(`/order-detail/${orderId}`)
+          .then(response => {
+            console.log("Fetch request sent. Response status:", response.status);
+            if (!response.ok) {
+              throw new Error("Network response was not ok: " + response.statusText);
+            }
+            return response.json();
+          })
+          .then(data => {
+            console.log("Data received from server:", data);
+
+            if (data.error) {
+              console.error("Error in received data:", data.error);
+              alert("Data error: " + data.error);
+              return;
+            }
+
+            try {
+              let usernameElem = document.getElementById('modalUserName');
+              let orderIdElem = document.getElementById('modalOrderId');
+              let emailElem = document.getElementById('modalOrderEmail');
+              let contactElem = document.getElementById('modalOrderContact');
+              let addressElem = document.getElementById('modalOrderAddress');
+              let productNameElem = document.getElementById('modalProductName');
+              let productNoteElem = document.getElementById('modalProductNote');
+              let productQuantityElem = document.getElementById('modalProductQuantity');
+              let productPriceElem = document.getElementById('modalProductPrice');
+
+              if (!usernameElem || !orderIdElem || !emailElem || !contactElem || !addressElem || !productNameElem || !productNoteElem || !productQuantityElem || !productPriceElem) {
+                console.error("One or more modal elements not found. Check your HTML for correct IDs.");
+                return;
+              }
+
+              // Update modal with data received
+              usernameElem.innerText = data.user.username;
+              orderIdElem.innerText = orderId;
+              emailElem.innerText = data.user.email;
+              contactElem.innerText = data.user.contact;
+              addressElem.innerText = data.user.address;
+              productNameElem.innerText = data.order.name_product;
+              productNoteElem.innerText = data.order.note_product;
+              productQuantityElem.innerText = data.order.quantity_product;
+              productPriceElem.innerText = `Rp. ${data.order.price_product}`;
+
+              console.log("Modal updated with new data");
+              $('#orderModal').modal('show');
+              console.log("Modal is now visible");
+            } catch (error) {
+              console.error("Error updating modal elements:", error);
+              alert("An error occurred while updating modal: " + error.message);
+            }
+          })
+          .catch(error => {
+            console.error("Fetch error:", error);
+            alert("An error occurred: " + error.message);
+          });
+      }
+
+      // Attach event listeners to order ID elements
+      const orderElements = document.querySelectorAll('.order-id');
+      orderElements.forEach(orderElem => {
+        orderElem.addEventListener('click', function () {
+          const orderId = orderElem.getAttribute('data-order-id');
+          const userId = orderElem.getAttribute('data-user-id'); // Assuming you add data-user-id in your HTML
+          openModal(orderId, userId);
+        });
+      });
+
+      // Optional: Attach close event listener to the modal close button
+      const modalCloseButton = document.querySelector('#orderModal .close');
+      if (modalCloseButton) {
+        modalCloseButton.addEventListener('click', closeModal);
+      }
+    });
+
+    function openProofModal(imageSrc) {
+      $('#modalImage').attr('src', imageSrc);
+      $('#ProofModal').modal('show');
+    }
+
+    function closeProofModal() {
+      $('#ProofModal').modal('hide');
+    }
+
+    function closeModal() {
+        console.log('Closing modal.');
+        $('#orderModal').modal('hide');
+      }
+
+    // Untuk update status pesanan
+    function updateOrderStatus(orderId, newStatus) {
+      console.log(`Updating order status for order ID: ${orderId} to new status: ${newStatus}`);
+
+      fetch('/update-order-status', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          order_id: orderId,
+          status_product: newStatus
+        })
+      })
+        .then(response => {
+          console.log('Response received:', response);
+          return response.json();
+        })
+        .then(data => {
+          console.log('Data received from server:', data);
+
+          if (data.success) {
+            alert('Order status updated successfully!');
+            location.reload();
+
+            closeModal();
+          } else {
+            console.error('Failed to update order status:', data.message);
+            alert('Failed to update order status: ' + data.message);
+          }
+        })
+        .catch(error => {
+          console.error('Error updating order status:', error);
+          alert('An error occurred: ' + error.message);
+        });
+    }
+  </script>
 
   <style>
-    .centered-text {
-      position: absolute;
-      top: 50%;
-      left: 60%;
-      transform: translate(-50%, -50%);
-      text-align: center;
-      /* Ini untuk mengatur teks secara horizontal di tengah */
+    .table td {
+      padding: 20px;
     }
   </style>
-  <h1 class="centered-text ">UNDONE</h1>
 
-  <!-- <div class="row row-cols-1 row-cols-md-3 g-4">
-    {% for item in product %}
-    <div class="col">
-      <div class="card">
-        <img src="../static/imgProduct/{{ item.gambar_produk[0] }}" class="card-img-top" alt="Gambar" height="300" style="object-fit: cover" />
-        <div class="card-body">
-          <div class="d-flex justify-content-between">
-            <h5 class="card-title">{{ item.nama_produk | truncate(45, True, '...') }}</h5>
-            <h5 class="card-title fw-bold" style="color: blue">{{ item.harga_produk }}</h5>
+  <div class="row" style="display: flex; justify-content: flex-end; margin: 16px;">
+    <div style="width: fit-content; text-align: center; display: flex;">
+      <span style="display: block; margin-right: 10px;">Total Earnings :</span>
+      <strong><strong>{{ total_earnings | rupiah }}</strong></strong>
+    </div>
+  </div>
+
+  <div class="tabel mt-4">
+    <div class="card border-0 shadow mb-4">
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-centered table-nowrap mb-2 rounded mt-3">
+            <thead class="thead-light" style="vertical-align: middle;">
+              <tr>
+                <th class="border-0 rounded-start text-center">Order ID</th>
+                <th class="border-0 text-center">Tanggal Order</th>
+                <th class="border-0 text-center">Nama User</th>
+                <th class="border-0 text-center">Status Pesanan</th>
+                <th class="border-0 text-center">Harga</th>
+                <th class="border-0 text-center">Bukti Transfer</th>
+              </tr>
+            </thead>
+            {% for order in orders %}
+            <tr>
+              <td class="text-center order-id" data-order-id="{{ order._id }}" data-user-id="{{ order.user_id }}"
+                onclick="openModal('{{ order._id }}', '{{ order.user_id }}')"
+                style="cursor: pointer; text-decoration: underline; width: 220px;">#{{ order._id }}</td>
+              <td class="text-center">{{ order.ordered_date }}</td>
+              <td class="text-center">
+                {% for user in users %}
+                {% if user._id == order.user_id %}
+                {{ user.username }}
+                {% endif %}
+                {% endfor %}
+              </td>
+              <td>
+                {% if order.status_product == "On Process" %}
+                <div class="text-center">
+                  <i class="bi bi-circle-fill" style="color: orange;"></i>
+                  <span>{{ order.status_product }}</span>
+                </div>
+                {% elif order.status_product == "On Delivery" %}
+                <div class="text-center">
+                  <i class="bi bi-circle-fill" style="color: rgb(14, 126, 206);"></i>
+                  <span>{{ order.status_product }}</span>
+                </div>
+                {% elif order.status_product == "Delivered" %}
+                <div class="text-center">
+                  <i class="bi bi-circle-fill" style="color: rgb(43, 206, 14);"></i>
+                  <span>{{ order.status_product }}</span>
+                </div>
+                {% elif order.status_product == "Canceled" %}
+                <div class="text-center">
+                  <i class="bi bi-circle-fill" style="color: rgb(206, 56, 14);"></i>
+                  <span>{{ order.status_product }}</span>
+                </div>
+                {% endif %}
+              </td>
+              <td class="text-center">{{ order.price_product | rupiah }}</td>
+              {% if order.bukti_trf_product %}
+              <td class="d-flex justify-content-center"><button
+                  style="padding: 10px; background-color: rgb(88, 173, 207); color: white ; border: 0; border-radius: 6px; font-size: small;"
+                  value=""
+                  onclick="openProofModal('{{ url_for('static', filename='' ~ order.bukti_trf_product) }}')">Bukti
+                  Transfer</button>
+              </td>
+              {% endif %}
+            </tr>
+            {% endfor %}
+          </table>
+        </div>
+      </div>
+
+      <!-- Modal Order-ID -->
+      <div class="modal fade" id="orderModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header border-0">
+              <button type="button" class="close rounded border-0" data-dismiss="modal" aria-label="Close"
+                onclick="closeModal()" style="position: absolute; right: 5%;">
+                <span aria-hidden="true">&times;</span>
+              </button>
+              <div class="d-flex">
+                <span style="margin-right: 10px; font-size: larger;"><strong
+                    id="modalUserName">username?</strong></span>
+                <span>#<span id="modalOrderId">order id?</span></span>
+              </div>
+            </div>
+            <div class="modal-body">
+
+              <div>
+                <table style="border-bottom: 1px solid #ddd;">
+                  <thead>
+                    <tr>
+                      <th style="font-weight: normal;">Email</th>
+                      <th style="font-weight: normal;">Phone</th>
+                      <th style="font-weight: normal;">Address</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong id="modalOrderEmail">email?</strong></td>
+                      <td><strong id="modalOrderContact">contact?</strong></td>
+                      <td><strong id="modalOrderAddress">address?</strong></td>
+                    </tr>
+                  </tbody>
+                </table>
+                <table style="border-bottom: 1px solid #ddd;">
+                  <thead>
+                    <tr>
+                      <th style="font-weight: normal;">Item</th>
+                      <th class="text-center" style="font-weight: normal;">Price</th>
+                      <th class="text-center" style="font-weight: normal;">Quantity</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td class="row" style="width: 280px; word-wrap: break-word;">
+                        <strong id="modalProductName">product name?</strong>
+                        <span>Note : <span id="modalProductNote">product note?</span></span>
+                      </td>
+                      <td style="margin-right: 20px;"><strong id="modalProductPrice">product price?</strong></td>
+                      <td class="text-center"><strong id="modalProductQuantity">product quantity?</strong></td>
+                    </tr>
+                  </tbody>
+                </table>
+                <table>
+                  <tr>
+                    <td><button
+                        style="padding: 10px; background-color: rgb(14, 126, 206); color: white; border: 0; border-radius: 6px;"
+                        value="On Delivery"
+                        onclick="updateOrderStatus(document.getElementById('modalOrderId').innerText, 'On Delivery')">On
+                        Delivery</button></td>
+                    <td><button
+                        style="padding: 10px; background-color: rgb(43, 206, 14); color: white; border: 0; border-radius: 6px;"
+                        value="Delivered"
+                        onclick="updateOrderStatus(document.getElementById('modalOrderId').innerText, 'Delivered')">Delivered</button>
+                    </td>
+                    <td><button
+                        style="padding: 10px; background-color: rgb(206, 56, 14); color: white; border: 0; border-radius: 6px;"
+                        value="Canceled"
+                        onclick="updateOrderStatus(document.getElementById('modalOrderId').innerText, 'Canceled')">Canceled</button>
+                    </td>
+
+                  </tr>
+                </table>
+              </div>
+            </div>
           </div>
-          <p class="card-text">{{ item.deskripsi_produk | truncate(50, True, '...') }}</p>
         </div>
       </div>
     </div>
-    {% endfor %}
-  </div> -->
+  </div>
+
+  <!-- Modal Image -->
+  <div class="modal fade" id="ProofModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close rounded border-0" data-dismiss="modal" aria-label="Close"
+            onclick="closeProofModal()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <img id="modalImage" src="" alt="Bukti Transfer" style="border: 3px solid black;">
+        </div>
+      </div>
+    </div>
+  </div>
+
 </main>
