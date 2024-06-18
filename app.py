@@ -990,8 +990,56 @@ def homeAdmin():
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         user_info = None
         
-    product = list(db.products.find({}))
-    return render_template('admin/admin_dashboard.html', product=product, is_logged_in=True, user_info=user_info)
+    orders = list(db.transaction.find({}).sort("ordered_date", -1))
+    users = list(db.users.find({}))
+
+    # Menjumlahkan semua harga yang ada di 
+    total_earnings = sum(order['price_product'] for order in orders)
+
+    return render_template('admin/admin_dashboard.html', orders=orders, users=users, total_earnings=total_earnings, is_logged_in=True, user_info=user_info)
+
+@app.route('/order-detail/<order_id>', methods=["GET"])
+def order_detail(order_id):
+    order = db.transaction.find_one({'_id': ObjectId(order_id)})
+    user = db.users.find_one({'_id': order['user_id']})
+
+    if order and user:
+        order_detail = {
+            "order": {
+                "name_product": order['name_product'],
+                "note_product": order['note_product'],
+                "quantity_product": order['quantity_product'],
+                "price_product": order['price_product'],
+                "bukti_trf_product": order['bukti_trf_product']
+            },
+            "user": {
+                "username": user['username'],
+                "email": user['email'],
+                "contact": user['contact'],
+                "address": user['address']
+            }
+        }
+        return jsonify(order_detail)
+    else:
+        return jsonify({"error": "Order or user not found"}), 404
+
+@app.route('/update-order-status', methods=["POST"])
+def update_order_status():
+    data = request.get_json()
+    order_id = data.get('order_id')
+    new_status = data.get('status_product')
+
+    if not order_id or not new_status:
+        return jsonify({"success": False, "message": "Invalid data"}), 400
+
+    try:
+        db.transaction.update_one(
+            {'_id': ObjectId(order_id)},
+            {'$set': {'status_product': new_status}}
+        )
+        return jsonify({"success": True, "message": "Order status updated successfully"})
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
 
 @app.route('/productsAdmin', methods=["GET"])
 def productsAdmin():
