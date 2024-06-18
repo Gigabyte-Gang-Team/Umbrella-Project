@@ -870,6 +870,7 @@ def transaction_cart():
                 'quantity_product': item.get('quantity_product', ''),
                 'price_product': item.get('price_product', ''),
                 'bukti_trf_product': filepath,
+                "status_product": "On Process",
                 "ordered_date" : formatted_date,
                 "ordered_time" : formatted_time,  
             })
