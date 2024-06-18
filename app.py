@@ -1037,7 +1037,7 @@ def addProduct():
             'stok_produk': stok,
             'merk_produk': merk,
             'kategori_produk': kategori,
-            'ulasan_produk': [[]],
+            'ulasan_produk': [],
             'total_pembelian':pembelian,
             'created_at': created_at
         }
