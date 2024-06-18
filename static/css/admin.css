@@ -78,10 +78,17 @@ h6 {
   font-weight: 500;
   color: #012970;
   font-family: 'Poppins', sans-serif;
+  transition: 0.3s;
 }
+
+.nama:hover {
+  transform: scale(1.05);
+  transition: 0.3s;
+}
+
 .namaAdmin {
     font-size: 18px;
-    font-weight: 500;
+    font-weight: bold;
     color: #012970;
     font-family: 'Poppins', sans-serif;
   }
@@ -288,12 +295,47 @@ svg {
   background-color: #4154f1;
 }
 
+.icon-black {
+  color: black; /* Warna hitam untuk ikon */
+}
+.icon-white {
+  color: white; /* Warna putih untuk ikon */
+}
+
 /* Body */
 #imgPreview {
   margin-right: 10px;
   border: 1px solid #2962cc;
   width: 200px;
 }
+
+table {
+  
+  margin: 20px auto; /* Adds margin around the table */
+  border-spacing: 10px; /* Adds spacing between cells */
+  width: auto; /* Make the table take full width */
+  
+}
+
+table th, table td {
+  padding: 10px; /* Adds padding inside cells */
+  white-space: nowrap; /* Mencegah teks berpindah baris */
+}
+
+.modal-dialog {
+  display: table; /* Membuat modal mengikuti ukuran konten */
+  max-width: none; /* Menghilangkan batasan lebar maksimum */
+  margin: 30px auto; /* Memberikan margin untuk centering */
+}
+
+.modal-content {
+  display: inline-block; /* Membuat ukuran modal-content mengikuti konten */
+  overflow: auto; /* Menambahkan scrollbar jika konten terlalu panjang */
+  white-space: nowrap; /* Mencegah teks untuk break line */
+  padding: 20px; /* Memberikan padding untuk kenyamanan */
+}
+
+
 
 /*--------------------------------------------------------------
     # Footer
