@@ -992,7 +992,7 @@ def productsAdmin():
     return render_template('admin/admin_products.html', product=product)
 
 @app.route('/addProduct', methods=["GET", "POST"])
-def addBook():
+def addProduct():
     if request.method == 'POST':
         # Mengambil data dari form
         nama = request.form.get('nama_produk')
@@ -1037,13 +1037,14 @@ def addBook():
             'stok_produk': stok,
             'merk_produk': merk,
             'kategori_produk': kategori,
+            'ulasan_produk': [[]],
             'total_pembelian':pembelian,
             'created_at': created_at
         }
         
         # Menyimpan dokumen ke database
         db.products.insert_one(doc)
-        return redirect(url_for("products"))
+        return redirect(url_for("productsAdmin"))
     
     return render_template('admin/admin_addProduct.html')
 
