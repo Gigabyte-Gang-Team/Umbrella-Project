@@ -287,28 +287,40 @@
                                 </div>
                                 <div class="tab-pane" id="nav-mission" role="tabpanel"
                                     aria-labelledby="nav-mission-tab">
-                                    {% for ulasan in product.ulasan_produk %}
-                                    <div class="d-flex tab-review rounded">
+                                    {% if product.ulasan_produk|length == 0 %}
+                                    <div class="d-flex tab-review rounded justify-content-center">
                                         <div class="tab-body">
-                                            <p class="mb-2" style="font-size: 14px;">{{ ulasan[0] }}</p>
-                                            <div class="d-flex justify-content-between">
-                                                <h5 class="fw-bold" style="color: rgb(31, 140, 235);">{{ ulasan[1] }}
-                                                </h5>
-                                            </div>
-                                            <div class="d-flex mb-3">
-                                                {% set rating = ulasan[2]|int %}
-                                                {% set greyStars = 5 - rating %}
-                                                {% for i in range(rating) %}
-                                                <i class="fa fa-star" style="color: #efc20a;"></i>
-                                                {% endfor %}
-                                                {% for i in range(greyStars) %}
-                                                <i class="fa fa-star" style="color: grey;"></i>
-                                                {% endfor %}
-                                            </div>
-                                            <p>{{ ulasan[3] }}</p>
+                                            <strong class="fs-4" style="color: rgb(31, 140, 235);">No Reviews</strong>
                                         </div>
                                     </div>
-                                    {% endfor %}
+                                    {% else %}
+                                        {% for ulasan in product.ulasan_produk %}
+                                        <div class="d-flex tab-review rounded">
+                                            <div class="tab-body">
+                                                <p class="mb-2" style="font-size: 14px;">{{ ulasan[0] }}</p>
+                                                <div class="d-flex justify-content-between">
+                                                    <h5 class="fw-bold" style="color: rgb(31, 140, 235);">{{ ulasan[1] }}
+                                                    </h5>
+                                                </div>
+                                                <div class="d-flex mb-3">
+                                                    <div class="d-flex mb-3">
+                                                        {% if product.ulasan_count > 0 %}
+                                                            {% set rating = ulasan[2]|int if ulasan[2] is defined else 0 %}
+                                                            {% set greyStars = 5 - rating %}
+                                                            {% for i in range(rating) %}
+                                                                <i class="fa fa-star" style="color: #efc20a;"></i>
+                                                            {% endfor %}
+                                                            {% for i in range(greyStars) %}
+                                                                <i class="fa fa-star" style="color: grey;"></i>
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                                <p>{{ ulasan[3] }}</p>
+                                            </div>
+                                        </div>
+                                        {% endfor %}
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
