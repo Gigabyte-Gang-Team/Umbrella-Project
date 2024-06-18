@@ -306,25 +306,32 @@ def detail_product(product_id):
         total_rating = 0
 
         for ulasan in ulasan_produk:
-            try:
-                # Pastikan ulasan[2] adalah angka
-                rating = int(ulasan[2])
-                total_rating += rating
-            except ValueError:
-                print(f"Invalid rating value: {ulasan[2]}")
+            if len(ulasan) >= 3:  # Minimal harus ada rating di indeks ke-2
+                try:
+                    rating = int(ulasan[2])
+                    total_rating += rating
+                except ValueError:
+                    print(f"Invalid rating value: {ulasan[2]}")
+            else:
+                print("Ulasan tidak memiliki rating yang valid.")
 
-        average_rating = total_rating / ulasan_count if ulasan_count > 0 else 0
+        # Hitung average_rating
+        if ulasan_count > 0:
+            average_rating = total_rating / ulasan_count
+        else:
+            average_rating = 0
+        
+        # Tambahkan average_rating ke data product
+        product["average_rating"] = average_rating
+        product["ulasan_count"] = ulasan_count
     else:
-        ulasan_produk = []
-        ulasan_count = 0
-        average_rating = 0
-
-    # Tambahkan average_rating ke data product
-    product["average_rating"] = average_rating
-    product["ulasan_count"] = ulasan_count
+        # Jika tidak ada ulasan
+        product["average_rating"] = 0
+        product["ulasan_count"] = 0
 
     # Untuk Sorting recent review dipaling atas
-    product["ulasan_produk"] = product["ulasan_produk"][::-1]
+    if "ulasan_produk" in product:
+        product["ulasan_produk"] = product["ulasan_produk"][::-1]
 
     # Tambahkan query untuk mengurutkan berdasarkan total pembelian
     best_selling_products = db.products.find().sort("total_pembelian", -1)
