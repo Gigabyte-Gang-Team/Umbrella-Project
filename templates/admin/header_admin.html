@@ -22,6 +22,8 @@
 
     <!-- CSS File -->
     <link href="../static/css/admin.css" rel="stylesheet" />
+    <!-- Logo Title -->
+    <link rel="icon" href="../static/img/Logo.png">
 
     <script>
       document.addEventListener('DOMContentLoaded', function () {
@@ -93,7 +95,7 @@
                             <span style="margin-right: 20px; color: white;">Admin</span>
                         </div>
                         {% endif %}
-                        <img id="photoPreview" src="../../static/profile_pics/andi.png" alt="Profile Picture" class="profile-picture rounded-circle d-none d-lg-flex" width="40" height="40" onclick="document.getElementById('input-pic').click();" style="cursor: pointer;">
+                        <img id="photoPreview" src="../static/profile_pics/andi.png" alt="Profile Picture" class="profile-picture rounded-circle d-none d-lg-flex" width="40" height="40" onclick="document.getElementById('input-pic').click();" style="cursor: pointer;">
                         <input type="file" id="input-pic" name="file_give" accept="image/*" style="display:none;" onchange="previewPhoto(event)">
                     </div>
                 </div>
