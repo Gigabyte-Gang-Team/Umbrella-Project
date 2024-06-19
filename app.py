@@ -771,14 +771,35 @@ def riwayat():
     token_receive = request.cookies.get(TOKEN_KEY)
     
     if not ('user_id' in session or token_receive):
-        return redirect(url_for('login'))  
+        return redirect(url_for('login'))
 
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         user_info = db.users.find_one({'email': payload.get('id')})
+        if user_info:
+            user_id = user_info['_id']
+            # Mendapatkan data transaksi berdasarkan user_id
+            transactions = db.transaction.find({'user_id': user_id})
+        else:
+            transactions = []
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         user_info = None
-    return render_template('history.html', is_logged_in=True, user_info=user_info)
+        transactions = []
+
+    return render_template('history.html', is_logged_in=True, user_info=user_info, transactions=transactions)
+
+
+    # token_receive = request.cookies.get(TOKEN_KEY)
+    
+    # if not ('user_id' in session or token_receive):
+    #     return redirect(url_for('login'))  
+
+    # try:
+    #     payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+    #     user_info = db.users.find_one({'email': payload.get('id')})
+    # except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+    #     user_info = None
+    # return render_template('history.html', is_logged_in=True, user_info=user_info)
 
 # Transaction Order Per Product
 @app.route('/transaction-order', methods=['POST'])
