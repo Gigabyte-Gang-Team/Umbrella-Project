@@ -34,7 +34,7 @@
                     {% if is_logged_in %}
                     <div class="user-text">{{ user_info['profile_name'] }}</div>
                     <img src="../static/{{ user_info.profile_pic_real }}" alt="Avatar Logo"
-                        style="width: 40px; border: 1px solid var(--warna-utama)" class="rounded-pill"
+                        style="width: 40px; height:40px; border: 1px solid var(--warna-utama)" class="rounded-pill"
                         onclick="redirectToUpdatePage()" />
                     <div class="vertical-line"></div>
                     {% else %}
