@@ -779,7 +779,7 @@ def riwayat():
         if user_info:
             user_id = user_info['_id']
             # Mendapatkan data transaksi berdasarkan user_id
-            transactions = db.transaction.find({'user_id': user_id})
+            transactions = list(db.transaction.find({'user_id': user_id}).sort('ordered_at', -1))
         else:
             transactions = []
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
