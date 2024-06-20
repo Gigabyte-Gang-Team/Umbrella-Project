@@ -1013,7 +1013,7 @@ def homeAdmin():
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         user_info = None
         
-    orders = list(db.transaction.find({}).sort("ordered_date", -1))
+    orders = list(db.transaction.find({}).sort("ordered_at", -1))
     users = list(db.users.find({}))
 
     # Menjumlahkan semua harga yang ada di 
