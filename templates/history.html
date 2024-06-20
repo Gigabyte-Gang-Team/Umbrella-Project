@@ -281,7 +281,7 @@
                 </div>
             </div>
        
-                <div id="semua" class="tab-content hidden">
+                <div id="semua" class="tab-content">
                     <!--<h2>Semua</h2>-->
                     <div class="content">
                         <!-- mulai item -->
@@ -380,27 +380,13 @@
                                 <p class="quantity">Jumlah beli:{{ transaction.quantity_product }}</p>
                             </div>
                             <div class="status">
-                                {% if transaction.status_product == "On Process" %}
-                                <div class="status-text">
-                                    <p class="proses"><i class="bi bi-circle-fill" style="color: orange;"></i>
-                                        <span>{{ transaction.status_product }}</span></p>
-                                </div>
-                                {% elif transaction.status_product == "On Delivery" %}
+                                {% if transaction.status_product == "On Delivery" %}
                                 <div class="status-text">
                                     <i class="bi bi-circle-fill" style="color: rgb(14, 126, 206);"></i>
                                     <span>{{ transaction.status_product }}</span>
                                   </div>
-                                  {% elif transaction.status_product == "Delivered" %}
-                                  <div class="status-text">
-                                    <i class="bi bi-circle-fill" style="color: rgb(43, 206, 14);"></i>
-                                    <span>{{ transaction.status_product }}</span>
-                                  </div>
-                                  {% elif transaction.status_product == "Canceled" %}
-                                  <div class="status-text">
-                                    <i class="bi bi-circle-fill" style="color: rgb(206, 56, 14);"></i>
-                                    <span>{{ transaction.status_product }}</span>
-                                  </div>
-                                  {% endif %}
+                                {% endif %}
+
                                 <div class="price-container">
                                     <p class="price">Rp {{ transaction.price_product }}</p>
                                     <p class="time">{{ transaction.ordered_date }}</p>
@@ -446,10 +432,12 @@
                                 <p class="quantity">Jumlah beli:{{ transaction.quantity_product }}</p>
                             </div>
                             <div class="status">
-                                <div class="status-text">
-                                    <p class="proses"><span class="bullet"></span> {{ transaction.status_product }}</p>
-                                        
-                                </div>
+                                {% if transaction.status_product == "Delivered" %}
+                                  <div class="status-text text-center">
+                                    <i class="bi bi-circle-fill" style="color: rgb(43, 206, 14);"></i>
+                                    <span>{{ transaction.status_product }}</span>
+                                  </div>
+                                {% endif %}
 
                                 <div class="price-container">
                                     <p class="price">Rp {{ transaction.price_product }}</p>
@@ -496,10 +484,12 @@
                                 <p class="quantity">Jumlah beli:{{ transaction.quantity_product }}</p>
                             </div>
                             <div class="status">
-                                <div class="status-text">
-                                    <p class="proses"><span class="bullet"></span> {{ transaction.status_product }}</p>
-                                        
-                                </div>
+                                {% if transaction.status_product == "Canceled" %}
+                                  <div class="status-text">
+                                    <i class="bi bi-circle-fill" style="color: rgb(206, 56, 14);"></i>
+                                    <span>{{ transaction.status_product }}</span>
+                                  </div>
+                                {% endif %}
 
                                 <div class="price-container">
                                     <p class="price">Rp {{ transaction.price_product }}</p>
