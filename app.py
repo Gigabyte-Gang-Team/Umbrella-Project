@@ -848,7 +848,8 @@ def transaction():
             "bukti_trf_product": filepath,
             "status_product": "On Process",
             "ordered_date" : formatted_date,
-            "ordered_time" : formatted_time,               
+            "ordered_time" : formatted_time, 
+            "ordered_at" : ordered_at
         }
         
         db.transaction.insert_one(doc)
@@ -901,6 +902,7 @@ def transaction_cart():
                 "status_product": "On Process",
                 "ordered_date" : formatted_date,
                 "ordered_time" : formatted_time,  
+                "ordered_at" : ordered_at
             })
         
         db.transaction.insert_many(transactions)
