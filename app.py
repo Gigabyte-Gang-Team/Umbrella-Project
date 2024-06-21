@@ -863,7 +863,7 @@ def submit_rating():
             # Simpan ulasan ke dalam database produk
             db.products.update_one(
                 {'_id': ObjectId(product_id)},
-                {'$push': {'ulasan_produk': [rating_date, user_info['name'], rating, description]}}
+                {'$push': {'ulasan_produk': [rating_date, user_info['username'], rating, description]}}
             )
 
             return jsonify({'status': 'success'})
@@ -871,6 +871,20 @@ def submit_rating():
             return jsonify({'status': 'error', 'message': 'User not found'})
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)})
+
+@app.route('/rating-detail/<product_id>', methods=['GET'])
+def get_product(product_id):
+    try:
+        product = db.transaction.find_one({'product_id': ObjectId(product_id)})
+        if not product:
+            return jsonify({'error': 'Product not found'}), 404
+        return jsonify({
+            'product_id': str(product['_id']),
+            'name_product': product['name_product'],
+            'image_product': product['image_product']
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 # Transaction Order Per Product
 @app.route('/transaction-order', methods=['POST'])
