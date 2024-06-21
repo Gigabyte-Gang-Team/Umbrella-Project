@@ -39,6 +39,93 @@
             object-fit: cover;
             /* Ensure the image covers the container */
         }
+        .hero-section {
+            padding: 40px 0;
+        }
+        
+        .hero-tagline h1 {
+            font-size: 48px;
+            font-weight: 700;
+        }
+        
+        .hero-tagline p {
+            font-size: 18px;
+            font-weight: 500;
+            color: #474443;
+        }
+        
+        .hero-img {
+            max-width: 100%;
+            position: relative;
+            top: 40px;
+            left: 100px;
+        }
+        
+        /* Media Queries */
+        @media (max-width: 991px) {
+            .hero-tagline h1 {
+                font-size: 36px;
+                left: 0;
+                width: 100%;
+            }
+        
+            .hero-tagline p {
+                font-size: 16px;
+                left: 0;
+                width: 100%;
+            }
+        
+            .hero-img {
+                top: 20px;
+                left: 50px;
+            }
+        }
+        
+        @media (max-width: 767px) {
+            .hero-tagline h1 {
+                font-size: 28px;
+                left: 0;
+                width: 100%;
+            }
+        
+            .hero-tagline p {
+                font-size: 14px;
+                left: 0;
+                width: 100%;
+            }
+        
+            .hero-img {
+                top: 10px;
+                left: 20px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .hero-section {
+                padding: 20px 0;
+            }
+        
+            .hero-tagline h1 {
+                font-size: 24px;
+                left: 0;
+                width: 100%;
+            }
+        
+            .hero-tagline p {
+                font-size: 12px;
+                left: 0;
+                width: 100%;
+            }
+        
+            .hero-img {
+                top: 0;
+                left: 0;
+                width: 100%;
+            }
+        
+            
+        }
+        
     </style>
 
 </head>
@@ -50,24 +137,22 @@
         <div class="container">
             <div class="row main-content">
                 <div class="col-md-6 hero-tagline my-auto">
-                    <h1>Buy your
-                        dream products</h1>
-                    <p style="text-align: justify;">Welcome to Umbrella Project Shop, the best place to find
-                        high-quality products that meet your
-                        needs. We are an online store committed to providing a wide range of innovative products at
-                        affordable prices, from electronics to everyday necessities.</p>
+                    <h1>Buy your dream products</h1>
+                    <p style="text-align: justify;">
+                        Welcome to Umbrella Project Shop, the best place to find high-quality products that meet your needs. We are an online store committed to providing a wide range of innovative products at affordable prices, from electronics to everyday necessities.
+                    </p>
                     <button class="btn btn-light fw-bold" onclick="window.location.href = '/products';">
                         <i class="bi bi-bag-fill"></i>
                         Buy Product
                     </button>
                 </div>
-                <div class="col-md-6">
-                    <img src="../static/img/img-hero.png" alt="" width="500" class="position-relative"
-                        style="top: 40px; left:100px;">
+                <div class="col-md-6 text-center">
+                    <img src="../static/img/img-hero.png" alt="" class="img-fluid hero-img">
                 </div>
             </div>
         </div>
     </main>
+    
 
     <section class="best-selling">
         <div class="container">
