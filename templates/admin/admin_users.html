@@ -1,0 +1,113 @@
+{% include "admin/header_admin.html" %}
+<main id="main" class="main">
+    <!-- End Page Title -->
+
+    <!-- Sweet Alert CDN -->
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+    <script>
+        function resetUser(userId) {
+            swal({
+                title: "Reset Password",
+                text: "Enter the new password:",
+                content: {
+                    element: "input",
+                    attributes: {
+                        type: "text",
+                        placeholder: "New Password",
+                    },
+                },
+                buttons: true,
+                dangerMode: true,
+            }).then((newPassword) => {
+                if (newPassword) {
+                    // Send the new password to the server
+                    fetch(`/resetUser/${userId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ password: newPassword }),
+                    }).then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                swal("Success", "Password has been reset.", "success")
+                                    .then(() => location.reload());
+                            } else {
+                                swal("Error", "Use another password", "error");
+                            }
+                        }).catch(error => {
+                            swal("Error", "Failed to reset password (Error)", "error");
+                        });
+                }
+            });
+        }
+
+        function deleteUser(userId, userName) {
+            swal({
+                title: "Delete User",
+                text: `Apakah kamu yakin ingin menghapus user "${userName}"?`,
+                icon: "warning",
+                buttons: ["Cancel", "Delete"],
+                dangerMode: true,
+            }).then((willDelete) => {
+                if (willDelete) {
+                    fetch(`/deleteUser/${userId}`, {
+                        method: 'DELETE',
+                    }).then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                swal("Success", "User has been deleted.", "success")
+                                    .then(() => location.reload());  // Reload the page to see changes
+                            } else {
+                                swal("Error", "Failed to delete user.", "error");
+                            }
+                        }).catch(error => {
+                            swal("Error", "Failed to delete user.", "error");
+                        });
+                }
+            });
+        }
+    </script>
+
+    <div class="tabel mt-4">
+        <div class="card border-0 shadow mb-4">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-centered table-nowrap mb-0 rounded mt-3">
+                        <thead class="thead-light" style="vertical-align: middle;">
+                            <tr>
+                                <th class="border-0 rounded-start text-center">User ID</th>
+                                <th class="border-0 text-center">Username</th>
+                                <th class="border-0 text-center">Email</th>
+                                <th class="border-0 text-center">Password</th>
+                                <th class="border-0 rounded-end text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        {% for user in users %}
+                        <tr>
+                            <td class="text-center">#{{ user._id }}</td>
+                            <td class="text-center">{{ user.username }}</td>
+                            <td class="text-center">{{ user.email }}</td>
+                            <td class="text-center">{{ user.password | mask_password }}</td>
+
+                            <td class="text-center">
+                                <button
+                                    style="padding: 10px; background-color: rgb(194, 70, 59); color: white ; border: 0; border-radius: 6px; font-size: small;"
+                                    value="" onclick="resetUser('{{ user._id }}')">Reset</button>
+                                <button
+                                    style="padding: 10px; background-color: rgb(194, 70, 59); color: white ; border: 0; border-radius: 6px; font-size: small;"
+                                    value=""
+                                    onclick="deleteUser('{{ user._id }}', '{{ user.username }}')">Delete</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            </div>
+
+            <!-- /.card -->
+        </div>
+    </div>
+</main>
+<!-- End #main -->

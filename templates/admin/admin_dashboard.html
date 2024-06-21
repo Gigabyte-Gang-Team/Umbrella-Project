@@ -172,7 +172,7 @@
               <td class="text-center order-id" data-order-id="{{ order._id }}" data-user-id="{{ order.user_id }}"
                 onclick="openModal('{{ order._id }}', '{{ order.user_id }}')"
                 style="cursor: pointer; text-decoration: underline; width: 220px;">#{{ order._id }}</td>
-              <td class="text-center">{{ order.ordered_date }}</td>
+              <td class="text-center"><strong>{{ order.ordered_date }}</strong> | <strong>{{ order.ordered_time }}</strong></td>
               <td class="text-center">
                 {% for user in users %}
                 {% if user._id == order.user_id %}
