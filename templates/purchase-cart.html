@@ -116,6 +116,7 @@
 
             const items = [];
             document.querySelectorAll('.product-detail-purchase').forEach(itemElement => {
+                const product_id = itemElement.getAttribute('data-product-id');
                 const image_product = itemElement.querySelector('.image-product').getAttribute('src');
                 const name_product = itemElement.querySelector('.name-product').innerText;
                 const note_product = itemElement.querySelector('.note-product').innerText.split(": ")[1];
@@ -123,6 +124,7 @@
                 const price_product = itemElement.querySelector('.price-product').getAttribute('data-price');
 
                 items.push({
+                    product_id: product_id,
                     image_product: image_product,
                     name_product: name_product,
                     note_product: note_product,
@@ -131,7 +133,6 @@
                 });
             });
 
-            //const bukti_trf_product = buktiTransferInput.files[0];
             let bukti_trf_product = document.getElementById('buktiTransfer').files[0]
             const formData = new FormData();
             formData.append('user_id', user_id);
@@ -145,7 +146,7 @@
                 contentType: false,
                 processData: false,
                 success: function (response) {
-                    alert('your payment is successful');
+                    alert('Your payment is successful');
                     deleteCartAfterPay();
                 },
             });
@@ -184,7 +185,7 @@
                     <div class="col-md-8">
                         <div class="product-details">
                             {% for item in items %}
-                            <div class="product-detail-purchase d-flex mb-3">
+                            <div class="product-detail-purchase d-flex mb-3" data-product-id="{{ item.product_id }}">
                                 <img src="../static/imgProduct/{{ item.gambar_produk }}" class="me-3 image-product"
                                     alt="{{ item.gambar_produk }}"
                                     style="max-width: 130px; height: 130px; border-radius: 10px;">

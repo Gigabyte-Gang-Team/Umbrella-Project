@@ -114,6 +114,8 @@
                 return;
             }
             // Mengambil nilai dari elemen-elemen HTML
+            let product_id = document.querySelector('.product-detail-purchase').getAttribute('data-product-id');
+
             let image_product = document.getElementById('image-product').getAttribute('src');
             let name_product = document.getElementById('name-product').innerText;
             let note_product = document.getElementById('note-product').innerText.split(": ")[1];
@@ -124,6 +126,7 @@
             // Membuat FormData untuk dikirimkan via AJAX
             let formData = new FormData();
             formData.append('user_id', user_id);
+            formData.append('product_id', product_id);
             formData.append('image_product', image_product);
             formData.append('name_product', name_product);
             formData.append('note_product', note_product);
@@ -198,16 +201,14 @@
                     <div class="col-md-8">
                         <div class="product-details">
                             {% for item in items %}
-                            <div class="product-detail-purchase d-flex mb-3">
+                            <div class="product-detail-purchase d-flex mb-3" data-product-id="{{ item.product_id }}">
                                 <img src="../static/imgProduct/{{ item.gambar_produk }}" class="me-3"
                                     alt="{{ item.gambar_produk }}" id="image-product"
                                     style="max-width: 130px; height: 130px; border-radius: 10px;">
                                 <div>
-                                    <h4 class="mt-0" id="name-product">{{ item.nama_produk | truncate(28, True, '...')
-                                        }}</h4>
+                                    <h4 class="mt-0" id="name-product">{{ item.nama_produk | truncate(28, True, '...') }}</h4>
                                     <p><span id="note-product">Note : {{ item.note }}</span><br><br><span
-                                            id="quantity-product">Qty :
-                                            {{ item.quantity }}</span></p>
+                                            id="quantity-product">Qty : {{ item.quantity }}</span></p>
                                 </div>
                                 <p id="price-product" class="ms-auto mt-auto" style="font-size: 18px;"
                                     data-price="{{ item.total_price }}">
