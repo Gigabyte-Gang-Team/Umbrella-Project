@@ -79,6 +79,35 @@
             position: relative;
             background-color: #fff;
         }
+        
+          
+          /* Adjust margin for screens smaller than 1200px */
+          @media (max-width: 1199px) {
+            .item {
+              margin: 10px 100px 20px 100px;
+            }
+          }
+          
+          /* Adjust margin for screens smaller than 992px */
+          @media (max-width: 991px) {
+            .item {
+              margin: 10px 50px 20px 50px;
+            }
+          }
+          
+          /* Adjust margin for screens smaller than 768px */
+          @media (max-width: 767px) {
+            .item {
+              margin: 10px 20px 20px 20px;
+            }
+          }
+          
+          /* Adjust margin for screens smaller than 576px */
+          @media (max-width: 575px) {
+            .item {
+              margin: 10px 10px 20px 10px;
+            }
+          }
 
         .item img {
             width: 130px;
@@ -92,12 +121,11 @@
             display: flex;
             flex-direction: column;
             flex-grow: 1;
-            margin-left: -50px;
+            margin-top: 15px;
+            padding-left: 6px;
         }
 
-        .details h2 {
-            margin: 0 0 10px;
-        }
+        
 
         .details .quantity {
             margin-bottom: 10px;
@@ -142,51 +170,31 @@
         .status {
             position: relative;
             display: flex;
-            align-items: center;
-            justify-content: flex-end; 
+            flex-direction: column; /* Make the children elements stack vertically */
+            align-items: flex-end; /* Align items to the right */
             font-size: 18px;
             font-weight: bold;
             white-space: nowrap;
-            padding: 10px; 
-        }
-
-        .status-text {
-            position: absolute;
-            top: 40px; 
-            right: 0; 
-        }
-
-        .proses {
-            display: flex;
-            align-items: center;
-            margin-right: 50px; 
-            font-weight: normal;
-        }
-
-        .bullet {
-            width: 15px; 
-            height: 15px;
-            border-radius: 50%; 
-            background-color: #FFE500; 
-            margin-right: 5px; 
-        }
-
-        .price-container {
-            display: flex;
-            align-items: center;
+            padding: 10px;
+          }
+          
+          .status .status-text,
+          .status .price,
+          .status .date {
+            margin: 5px 0; /* Add some margin for spacing between the rows */
+          }
+          
+          
+          .status .price {
+            color: green; /* Optional: Add some styling for the price */
             margin-top: 40px;
-            margin-right: 45px; 
-        }
-        
-        .price {
-            margin-top: -20px;
-            margin-right: -50px;
-        }
-        
-        .time {
-            margin-top: 80px;
-            margin-left: -30px; /* Optional: If you want to push the time to the far right */
-        }
+          }
+          
+          .status .date {
+
+            color: gray; /* Optional: Add some styling for the date */
+            font-weight: normal; /* Optional: Make the date text normal weight */
+          }
         
         .modal {
             display: none;
@@ -274,10 +282,10 @@
             < Back</span>
             <div class="navbar-history-container">
                 <div class="navbar-history">
-                    <a href="#semua" class="active">Semua</a>
-                    <a href="#dikirim">Dikirim</a>
-                    <a href="#selesai">Selesai</a>
-                    <a href="#dibatalkan">Pesanan Dibatalkan</a>
+                    <a href="#semua" class="active">ALL</a>
+                    <a href="#dikirim">On Delivery</a>
+                    <a href="#selesai">Delivered</a>
+                    <a href="#dibatalkan">Canceled</a>
                 </div>
             </div>
        
@@ -310,36 +318,33 @@
                             </div>
                             
                             <div class="details">
-                                <h2>{{ transaction.name_product }}</h2>
+                                <h3>{{ transaction.name_product }}</h3>
                                 <p class="quantity">Jumlah beli:{{ transaction.quantity_product }}</p>
                             </div>
                             <div class="status">
                                 {% if transaction.status_product == "On Process" %}
                                 <div class="status-text">
-                                    <p class="proses"><i class="bi bi-circle-fill" style="color: orange;"></i>
-                                        <span>{{ transaction.status_product }}</span></p>
+                                    <i class="bi bi-circle-fill" style="color: orange;"></i>
+                                    <span>{{ transaction.status_product }}</span></p>
                                 </div>
                                 {% elif transaction.status_product == "On Delivery" %}
                                 <div class="status-text">
                                     <i class="bi bi-circle-fill" style="color: rgb(14, 126, 206);"></i>
                                     <span>{{ transaction.status_product }}</span>
-                                  </div>
-                                  {% elif transaction.status_product == "Delivered" %}
-                                  <div class="status-text">
-                                    <i class="bi bi-circle-fill" style="color: rgb(43, 206, 14);"></i>
-                                    <span>{{ transaction.status_product }}</span>
-                                  </div>
-                                  {% elif transaction.status_product == "Canceled" %}
-                                  <div class="status-text">
-                                    <i class="bi bi-circle-fill" style="color: rgb(206, 56, 14);"></i>
-                                    <span>{{ transaction.status_product }}</span>
-                                  </div>
-                                  {% endif %}
-                                <div class="price-container">
-                                    <p class="price">Rp {{ transaction.price_product }}</p>
-                                    <p class="time">{{ transaction.ordered_date }}</p>
                                 </div>
-                                
+                                {% elif transaction.status_product == "Delivered" %}
+                                <div class="status-text">
+                                <i class="bi bi-circle-fill" style="color: rgb(43, 206, 14);"></i>
+                                <span>{{ transaction.status_product }}</span>
+                                </div>
+                                {% elif transaction.status_product == "Canceled" %}
+                                <div class="status-text">
+                                <i class="bi bi-circle-fill" style="color: rgb(206, 56, 14);"></i>
+                                <span>{{ transaction.status_product }}</span>
+                                </div>
+                                {% endif %}
+                                <div class="price">Rp {{ transaction.price_product }}</div>
+                                <div class="date">{{ transaction.ordered_date }}</div>
                             </div>
                         </div>
                         {% endfor %}
@@ -384,13 +389,10 @@
                                 <div class="status-text">
                                     <i class="bi bi-circle-fill" style="color: rgb(14, 126, 206);"></i>
                                     <span>{{ transaction.status_product }}</span>
-                                  </div>
-                                {% endif %}
-
-                                <div class="price-container">
-                                    <p class="price">Rp {{ transaction.price_product }}</p>
-                                    <p class="time">{{ transaction.ordered_date }}</p>
                                 </div>
+                                {% endif %}
+                                <div class="price">Rp {{ transaction.price_product }}</div>
+                                <div class="date">{{ transaction.ordered_date }}</div>
                             </div>
                         </div>      
                         {% endif %}                 
@@ -439,10 +441,8 @@
                                   </div>
                                 {% endif %}
 
-                                <div class="price-container">
-                                    <p class="price">Rp {{ transaction.price_product }}</p>
-                                    <p class="time">{{ transaction.ordered_date }}</p>
-                                </div>
+                                <div class="price">Rp {{ transaction.price_product }}</div>
+                                <div class="date">{{ transaction.ordered_date }}</div>
                             </div>
                         </div>      
                         {% endif %}                 
@@ -491,10 +491,8 @@
                                   </div>
                                 {% endif %}
 
-                                <div class="price-container">
-                                    <p class="price">Rp {{ transaction.price_product }}</p>
-                                    <p class="time">{{ transaction.ordered_date }}</p>
-                                </div>
+                                <div class="price">Rp {{ transaction.price_product }}</div>
+                                <div class="date">{{ transaction.ordered_date }}</div>
                             </div>
                         </div>      
                         {% endif %}                 
@@ -507,7 +505,7 @@
         
             <div id="ratingModal" class="modal">
                 <div class="modal-content">
-                    <h2 class="text-center">Nama Produk</h2>
+                    <h2 class="text-center">Name Product</h2>
                     
                     <div class="row">
                         <div class="col-md-4 d-flex align-items-center">
@@ -516,7 +514,6 @@
                         <div class="col-md-8">
                             
                             <div class="stars mt-1">
-                                <span class="mb-10">Rate</span>
                                 <span class="star" onclick="rateProduct(1)">&#9734;</span>
                                 <span class="star" onclick="rateProduct(2)">&#9734;</span>
                                 <span class="star" onclick="rateProduct(3)">&#9734;</span>
@@ -524,7 +521,7 @@
                                 <span class="star" onclick="rateProduct(5)">&#9734;</span>
                             </div>
                             <span>Describe</span>
-                            <textarea id="ratingDescription" class="form-control mb-3" placeholder="Deskripsi penilaian..."></textarea>
+                            <textarea id="ratingDescription" class="form-control mb-3" placeholder="Rate our service.."></textarea>
                         </div>
                         <div class="row justify-content-end">
                             <div class="col-auto ml-auto">
