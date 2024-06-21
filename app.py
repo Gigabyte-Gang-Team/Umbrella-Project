@@ -788,35 +788,61 @@ def riwayat():
 
     return render_template('history.html', is_logged_in=True, user_info=user_info, transactions=transactions)
 
+@app.route('/submit_rating', methods=['POST'])
+def submit_rating():
+    try:
+        token_receive = request.cookies.get(TOKEN_KEY)
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        user_info = db.users.find_one({'email': payload.get('id')})
+        if user_info:
+            user_id = user_info['_id']
 
-    # token_receive = request.cookies.get(TOKEN_KEY)
-    
-    # if not ('user_id' in session or token_receive):
-    #     return redirect(url_for('login'))  
+            # Ambil data ulasan dari request POST
+            data = request.json
+            product_id = data.get('product_id')
+            rating = int(data.get('rating'))
+            description = data.get('description')
+            rating_date = datetime.now().strftime('%d-%m-%Y')
 
-    # try:
-    #     payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
-    #     user_info = db.users.find_one({'email': payload.get('id')})
-    # except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
-    #     user_info = None
-    # return render_template('history.html', is_logged_in=True, user_info=user_info)
+            # Simpan ulasan ke dalam database produk
+            db.products.update_one(
+                {'_id': ObjectId(product_id)},
+                {'$push': {'ulasan_produk': [rating_date, user_info['name'], rating, description]}}
+            )
+
+            return jsonify({'status': 'success'})
+        else:
+            return jsonify({'status': 'error', 'message': 'User not found'})
+    except Exception as e:
+        return jsonify({'status': 'error', 'message': str(e)})
 
 # Transaction Order Per Product
 @app.route('/transaction-order', methods=['POST'])
 def transaction():
     try:
+        print('Request received')
+        
+        # Mengambil data dari form
         user_id = request.form.get('user_id')
+        product_id = request.form.get('product_id')
 
         if not user_id:
             return jsonify({'message': 'User ID diperlukan!'}), 400
+        
+        if not product_id:
+            return jsonify({'message': 'Product ID diperlukan!'}), 400
 
+        # Konversi ke ObjectId
         user_id = ObjectId(user_id)
+        product_id = ObjectId(product_id)
+
+        # Mengambil data produk lainnya dari form
         image_product_receive = request.form['image_product']
         name_product_receive = request.form['name_product']
         note_product_receive = request.form['note_product']
         quantity_product_receive = request.form['quantity_product']
         price_product_receive = int(request.form['price_product'])
-        
+
         if 'bukti_trf_product' not in request.files:
             return jsonify({'error': 'No file part'}), 400
 
@@ -831,30 +857,33 @@ def transaction():
                 return jsonify({'result': 'error', 'msg': 'Invalid file type'})
             filepath = f'img_transaction/trf-{uuid.uuid4().hex}.{extension}'
             save_path = os.path.join('./static/', filepath)
-            
             file.save(save_path)
-        
+
         ordered_at = datetime.now()
         formatted_date = ordered_at.strftime("%d-%m-%Y")
         formatted_time = ordered_at.strftime("%H:%M:%S")
-    
+
         doc = {
             "user_id": user_id,
-            "image_product": image_product_receive,                               
-            "name_product": name_product_receive,                                    
-            "note_product": note_product_receive,                                 
-            "quantity_product": quantity_product_receive,                           
+            "product_id": product_id,
+            "image_product": image_product_receive,
+            "name_product": name_product_receive,
+            "note_product": note_product_receive,
+            "quantity_product": quantity_product_receive,
             "price_product": price_product_receive,
             "bukti_trf_product": filepath,
             "status_product": "On Process",
-            "ordered_date" : formatted_date,
-            "ordered_time" : formatted_time, 
-            "ordered_at" : ordered_at
+            "ordered_date": formatted_date,
+            "ordered_time": formatted_time,
+            "ordered_at": ordered_at
         }
-        
+
+        print('Document to insert:', doc)
+
         db.transaction.insert_one(doc)
         return jsonify({'result': 'success'})
     except Exception as e:
+        print('Error:', str(e))
         return jsonify({'error': str(e)}), 500
 # End Transaction Order
 
@@ -863,15 +892,18 @@ def transaction():
 def transaction_cart():
     try:
         user_id = request.form.get('user_id')
-        items = request.form.get('items')
         bukti_trf_product = request.files['bukti_trf_product']
+        items = request.form.get('items')
 
         if not user_id or not items or not bukti_trf_product:
             return jsonify({'error': 'User ID, items, or proof of transfer is missing!'}), 400
 
-        items = json.loads(items)
+        # Konversi user_id ke ObjectId
         user_id_obj = ObjectId(user_id)
-        
+
+        # Parsing items dari string JSON menjadi list dictionary
+        items = json.loads(items)
+
         if bukti_trf_product.filename == '':
             return jsonify({'error': 'No selected file'}), 400
 
@@ -882,35 +914,39 @@ def transaction_cart():
                 return jsonify({'error': 'Invalid file type'}), 400
             filepath = f'img_transaction/trf-{uuid.uuid4().hex}.{extension}'
             save_path = os.path.join('./static/', filepath)
-            
             bukti_trf_product.save(save_path)
-        
+
         ordered_at = datetime.now()
         formatted_date = ordered_at.strftime("%d-%m-%Y")
         formatted_time = ordered_at.strftime("%H:%M:%S")
-        
+
         transactions = []
         for item in items:
+            try:
+                product_id_obj = ObjectId(item.get('product_id'))
+            except Exception as e:
+                return jsonify({'error': f'Invalid product_id format for item: {item}'}), 400
+
             transactions.append({
                 'user_id': user_id_obj,
+                'product_id': product_id_obj,
                 'image_product': item.get('image_product', ''),
                 'name_product': item.get('name_product', ''),
                 'note_product': item.get('note_product', ''),
                 'quantity_product': item.get('quantity_product', ''),
                 'price_product': int(item.get('price_product', '')),
                 'bukti_trf_product': filepath,
-                "status_product": "On Process",
-                "ordered_date" : formatted_date,
-                "ordered_time" : formatted_time,  
-                "ordered_at" : ordered_at
+                'status_product': 'On Process',
+                'ordered_date': formatted_date,
+                'ordered_time': formatted_time,
+                'ordered_at': ordered_at
             })
-        
+
         db.transaction.insert_many(transactions)
         return jsonify({'result': 'success'})
-    
+
     except KeyError as e:
         return jsonify({'error': f'Missing key in request: {str(e)}'}), 400
-    
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 # End Transaction Cart
@@ -1066,8 +1102,19 @@ def update_order_status():
 
 @app.route('/productsAdmin', methods=["GET"])
 def productsAdmin():
+    token_receive = request.cookies.get(TOKEN_KEY)
+    
+    if not ('user_id' in session or token_receive):
+        return redirect(url_for('login_admin'))  # Redirect to the login page if not logged in
+
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        user_info = db.admin.find_one({'email': payload.get('id')})
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        user_info = None
+
     product = list(db.products.find({}).sort("created_at", -1))
-    return render_template('admin/admin_products.html', product=product)
+    return render_template('admin/admin_products.html', product=product, is_logged_in=True, user_info=user_info)
 
 @app.route('/addProduct', methods=["GET", "POST"])
 def addProduct():
@@ -1222,6 +1269,100 @@ def deleteImage(_id):
 def deleteProduct(_id):
     db.products.delete_one({'_id': ObjectId(_id)})
     return redirect(url_for('productsAdmin'))
+
+@app.template_filter('mask_password')
+def mask_password(password):
+    return "***********"
+
+@app.route('/usersAdmin', methods=["GET"])
+def UsersAdmin():
+    token_receive = request.cookies.get(TOKEN_KEY)
+    
+    if not ('user_id' in session or token_receive):
+        return redirect(url_for('login_admin'))  # Redirect to the login page if not logged in
+
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        user_info = db.admin.find_one({'email': payload.get('id')})
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        user_info = None
+
+    users = list(db.users.find({}))
+    return render_template('admin/admin_users.html', users=users, is_logged_in=True, user_info=user_info)
+
+@app.route('/resetUser/<user_id>', methods=["POST"])
+def reset_user(user_id):
+    new_password = request.json.get('password')
+    if not new_password:
+        return jsonify({'success': False, 'message': 'No password provided'})
+
+    # Hash the new password
+    password_hash = hashlib.sha256(new_password.encode('utf-8')).hexdigest()
+
+    # Update the password in the database
+    result = db.users.update_one(
+        {'_id': ObjectId(user_id)},
+        {'$set': {'password': password_hash}}
+    )
+
+    if result.modified_count == 1:
+        return jsonify({'success': True, 'message': 'Password reset successfully'})
+    else:
+        return jsonify({'success': False, 'message': 'Failed to reset password'})
+    
+@app.route('/deleteUser/<user_id>', methods=["DELETE"])
+def delete_user(user_id):
+    result = db.users.delete_one({'_id': ObjectId(user_id)})
+
+    if result.deleted_count == 1:
+        return jsonify({'success': True, 'message': 'User deleted successfully'})
+    else:
+        return jsonify({'success': False, 'message': 'Failed to delete user'})
+
+@app.route('/admins', methods=["GET"])
+def Admins():
+    token_receive = request.cookies.get(TOKEN_KEY)
+    
+    if not ('user_id' in session or token_receive):
+        return redirect(url_for('login_admin'))  # Redirect to the login page if not logged in
+
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        user_info = db.admin.find_one({'email': payload.get('id')})
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        user_info = None
+
+    admins = list(db.admin.find({}))
+    return render_template('admin/admins.html', admins=admins, is_logged_in=True, user_info=user_info)
+
+@app.route('/resetAdmin/<admin_id>', methods=["POST"])
+def reset_admin(admin_id):
+    new_password = request.json.get('password')
+    if not new_password:
+        return jsonify({'success': False, 'message': 'No password provided'})
+
+    # Hash the new password
+    password_hash = hashlib.sha256(new_password.encode('utf-8')).hexdigest()
+
+    # Update the password in the database
+    result = db.admin.update_one(
+        {'_id': ObjectId(admin_id)},
+        {'$set': {'password': password_hash}}
+    )
+
+    if result.modified_count == 1:
+        return jsonify({'success': True, 'message': 'Password reset successfully'})
+    else:
+        return jsonify({'success': False, 'message': 'Failed to reset password'})
+    
+@app.route('/deleteAdmin/<admin_id>', methods=["DELETE"])
+def delete_admin(admin_id):
+    result = db.admin.delete_one({'_id': ObjectId(admin_id)})
+
+    if result.deleted_count == 1:
+        return jsonify({'success': True, 'message': 'Admin deleted successfully'})
+    else:
+        return jsonify({'success': False, 'message': 'Failed to delete Admin'})
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)
