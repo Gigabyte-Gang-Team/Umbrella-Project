@@ -788,6 +788,62 @@ def riwayat():
 
     return render_template('history.html', is_logged_in=True, user_info=user_info, transactions=transactions)
 
+@app.route('/cancel-order', methods=['POST'])
+def cancel_order():
+    try:
+        product_id = request.json.get('product_id')
+
+        if not product_id:
+            return jsonify({'message': 'Product ID diperlukan!'}), 400
+
+        # Konversi ke ObjectId
+        product_id = ObjectId(product_id)
+
+        # Cari transaksi dengan product_id dan status "On Process"
+        transaction = db.transaction.find_one({"product_id": product_id, "status_product": "On Process"})
+        
+        if not transaction:
+            return jsonify({'message': 'Transaksi tidak ditemukan atau status bukan "On Process".'}), 404
+        
+        # Update status_product menjadi "Canceled"
+        db.transaction.update_one(
+            {"product_id": product_id, "status_product": "On Process"},
+            {"$set": {"status_product": "Canceled"}}
+        )
+
+        return jsonify({'result': 'success'})
+    except Exception as e:
+        print('Error:', str(e))
+        return jsonify({'error': str(e)}), 500
+    
+@app.route('/selesai-order', methods=['POST'])
+def selesai_order():
+    try:
+        product_id = request.json.get('product_id')
+
+        if not product_id:
+            return jsonify({'message': 'Product ID diperlukan!'}), 400
+
+        # Konversi ke ObjectId
+        product_id = ObjectId(product_id)
+
+        # Cari transaksi dengan product_id dan status "On Process"
+        transaction = db.transaction.find_one({"product_id": product_id, "status_product": "On Delivery"})
+        
+        if not transaction:
+            return jsonify({'message': 'Transaksi tidak ditemukan atau status bukan "On Delivery".'}), 404
+        
+        # Update status_product menjadi "Canceled"
+        db.transaction.update_one(
+            {"product_id": product_id, "status_product": "On Delivery"},
+            {"$set": {"status_product": "Delivered"}}
+        )
+
+        return jsonify({'result': 'success'})
+    except Exception as e:
+        print('Error:', str(e))
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/submit_rating', methods=['POST'])
 def submit_rating():
     try:
@@ -807,7 +863,7 @@ def submit_rating():
             # Simpan ulasan ke dalam database produk
             db.products.update_one(
                 {'_id': ObjectId(product_id)},
-                {'$push': {'ulasan_produk': [rating_date, user_info['name'], rating, description]}}
+                {'$push': {'ulasan_produk': [rating_date, user_info['username'], rating, description]}}
             )
 
             return jsonify({'status': 'success'})
@@ -815,6 +871,20 @@ def submit_rating():
             return jsonify({'status': 'error', 'message': 'User not found'})
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)})
+
+@app.route('/rating-detail/<product_id>', methods=['GET'])
+def get_product(product_id):
+    try:
+        product = db.transaction.find_one({'product_id': ObjectId(product_id)})
+        if not product:
+            return jsonify({'error': 'Product not found'}), 404
+        return jsonify({
+            'product_id': str(product['_id']),
+            'name_product': product['name_product'],
+            'image_product': product['image_product']
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 # Transaction Order Per Product
 @app.route('/transaction-order', methods=['POST'])
@@ -840,7 +910,7 @@ def transaction():
         image_product_receive = request.form['image_product']
         name_product_receive = request.form['name_product']
         note_product_receive = request.form['note_product']
-        quantity_product_receive = request.form['quantity_product']
+        quantity_product_receive = int(request.form['quantity_product'])
         price_product_receive = int(request.form['price_product'])
 
         if 'bukti_trf_product' not in request.files:
@@ -879,8 +949,32 @@ def transaction():
         }
 
         print('Document to insert:', doc)
-
         db.transaction.insert_one(doc)
+        
+        product = db.products.find_one({"_id": product_id})
+        if product:
+            current_stock = product.get("stok_produk", 0)
+            total_pembelian = product.get("total_pembelian", 0)
+
+            # Mengecek apakah stok tidak sama dengan 0
+            if current_stock != 0:
+                # Mengurangi stok dengan quantity produk yang dipesan
+                new_stock = current_stock - quantity_product_receive
+
+                # Menambahkan quantity produk ke total pembelian
+                new_total_pembelian = total_pembelian + quantity_product_receive
+
+                # Melakukan update ke database produk
+                db.products.update_one(
+                    {"_id": product_id},
+                    {"$set": {"stok_produk": new_stock, "total_pembelian": new_total_pembelian}}
+                )
+                print(f"Produk {product_id} telah diupdate: stok {new_stock}, total pembelian {new_total_pembelian}")
+            else:
+                print(f"Produk {product_id} stok habis.")
+        else:
+            print(f"Produk {product_id} tidak ditemukan.")
+        
         return jsonify({'result': 'success'})
     except Exception as e:
         print('Error:', str(e))
@@ -927,13 +1021,14 @@ def transaction_cart():
             except Exception as e:
                 return jsonify({'error': f'Invalid product_id format for item: {item}'}), 400
 
+            quantity_product = int(item.get('quantity_product', ''))
             transactions.append({
                 'user_id': user_id_obj,
                 'product_id': product_id_obj,
                 'image_product': item.get('image_product', ''),
                 'name_product': item.get('name_product', ''),
                 'note_product': item.get('note_product', ''),
-                'quantity_product': item.get('quantity_product', ''),
+                'quantity_product': quantity_product,
                 'price_product': int(item.get('price_product', '')),
                 'bukti_trf_product': filepath,
                 'status_product': 'On Process',
@@ -941,6 +1036,31 @@ def transaction_cart():
                 'ordered_time': formatted_time,
                 'ordered_at': ordered_at
             })
+            
+            # Perbarui stok dan total pembelian produk
+            product = db.products.find_one({"_id": product_id_obj})
+            if product:
+                current_stock = product.get("stok_produk", 0)
+                total_pembelian = product.get("total_pembelian", 0)
+
+                # Mengecek apakah stok tidak sama dengan 0
+                if current_stock != 0:
+                    # Mengurangi stok dengan quantity produk yang dipesan
+                    new_stock = current_stock - quantity_product
+
+                    # Menambahkan quantity produk ke total pembelian
+                    new_total_pembelian = total_pembelian + quantity_product
+
+                    # Melakukan update ke database produk
+                    db.products.update_one(
+                        {"_id": product_id_obj},
+                        {"$set": {"stok_produk": new_stock, "total_pembelian": new_total_pembelian}}
+                    )
+                    print(f"Produk {product_id_obj} telah diupdate: stok {new_stock}, total pembelian {new_total_pembelian}")
+                else:
+                    print(f"Produk {product_id_obj} stok habis.")
+            else:
+                print(f"Produk {product_id_obj} tidak ditemukan.")
 
         db.transaction.insert_many(transactions)
         return jsonify({'result': 'success'})
