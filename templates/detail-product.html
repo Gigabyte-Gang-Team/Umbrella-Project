@@ -76,8 +76,22 @@
             const note = document.querySelector('textarea.form-control').value;
 
             if (!user_id) {
-                alert('Anda harus login untuk menambahkan produk ke keranjang.');
-                return;
+                if (!user_id) {
+                    Swal.fire({
+                      title: 'Permission Denied',
+                      text: 'You need to log in first to continue.',
+                      icon: 'warning',
+                      showCancelButton: true,
+                      confirmButtonColor: '#3085d6',
+                      cancelButtonColor: '#d33',
+                      confirmButtonText: 'Login',
+                    }).then((result) => {
+                      if (result.isConfirmed) {
+                        window.location.href = '/login';
+                      }
+                    });
+                    return;
+                  }
             }
 
             const data = {
@@ -95,8 +109,13 @@
                 contentType: 'application/json',
                 data: JSON.stringify(data),
                 success: function (response) {
-                    alert(response.message);
-                    window.location.href = '/cart';
+                    Swal.fire({
+                        title: "Success!",
+                        text: "Product Has been successfully add to cart!.",
+                        icon: "success"
+                      }).then(() => {
+                        window.location.href = '/cart';
+                      });
                 },
                 error: function (xhr, status, error) {
                     console.error('Error dari server:', error);
@@ -112,8 +131,22 @@
             const note = document.querySelector('textarea.form-control').value;
 
             if (!user_id) {
-                alert('Anda harus login sebelum membeli produk.');
-                return;
+                if (!user_id) {
+                    Swal.fire({
+                      title: 'Permission Denied',
+                      text: 'You need to log in first to continue.',
+                      icon: 'warning',
+                      showCancelButton: true,
+                      confirmButtonColor: '#3085d6',
+                      cancelButtonColor: '#d33',
+                      confirmButtonText: 'Login',
+                    }).then((result) => {
+                      if (result.isConfirmed) {
+                        window.location.href = '/login';
+                      }
+                    });
+                    return;
+                  }
             }
 
             const data = {
@@ -131,8 +164,15 @@
                 contentType: 'application/json',
                 data: JSON.stringify(data),
                 success: function (response) {
-                    alert(response.message);
-                    window.location.href = '/purchase-buy-now';
+                    Swal.fire({
+                        title: "Success!",
+                        text: "Product Has been successfully to purchase!.",
+                        icon: "success"
+                      }).then(() => {
+                        window.location.href = '/purchase-buy-now';
+                      });
+                    //alert(response.message);
+                    //window.location.href = '/purchase-buy-now';
                 },
                 error: function (xhr, status, error) {
                     console.error('Error dari server:', error);

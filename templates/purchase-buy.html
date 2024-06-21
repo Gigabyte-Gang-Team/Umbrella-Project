@@ -105,7 +105,12 @@
             const buktiTransferInput = document.getElementById('buktiTransfer');
 
             if (buktiTransferInput.files.length === 0) {
-                alert('You must upload proof of transfer first.');
+                Swal.fire({
+                    title: "Permission Denied",
+                    text: "You must upload proof of transfer first.",
+                    icon: "warning",
+                    confirmButtonText: "OK"
+                  });
                 return;
             }
             const user_id = '{{ user_info["_id"] if user_info else "" }}';
@@ -141,8 +146,12 @@
                 contentType: false,
                 processData: false,
                 success: function (response) {
-                    alert('your payment is successful');
+                    Swal.fire({
+                    title: "Your Paiment Successful!",
+                    icon: "success"
+                    }).then(() => {
                     deleteOrderAfterPay()
+                    }); 
                 },
             })
         }

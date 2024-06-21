@@ -1,3 +1,5 @@
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+</head>
 <style>
     /* Sticky Header */
     .sticky-header {
@@ -98,7 +100,7 @@
                     </li>
                     {% if is_logged_in %}
                     <li>
-                        <a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
+                        <a class="dropdown-item" href="#" onclick="confirmLogout(event)"><i class="bi bi-box-arrow-right"></i> Logout</a>
                     </li>
                     {% else %}
                     <li>
@@ -115,5 +117,31 @@
     function redirectToUpdatePage() {
         window.location.href = "/update_profile";
     }
+    document.getElementById("logout-button").addEventListener("click", confirmLogout);
+    function confirmLogout(event) {
+        event.preventDefault(); // Mencegah tautan default untuk dijalankan
+        Swal.fire({
+            title: 'Logout Confirmation',
+            text: "Are you sure you want to logout?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, logout!',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Logged Out',
+                    text: "You've successfully logged out. See you next time!",
+                    icon: 'success'
+                }).then(() => {
+                    window.location.href = "/logout"; // Redirect to logout page
+                });
+            }
+        });
+    }
+
+
 </script>
 <!-- End Header -->
