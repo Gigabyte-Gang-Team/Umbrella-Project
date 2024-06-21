@@ -788,6 +788,62 @@ def riwayat():
 
     return render_template('history.html', is_logged_in=True, user_info=user_info, transactions=transactions)
 
+@app.route('/cancel-order', methods=['POST'])
+def cancel_order():
+    try:
+        product_id = request.json.get('product_id')
+
+        if not product_id:
+            return jsonify({'message': 'Product ID diperlukan!'}), 400
+
+        # Konversi ke ObjectId
+        product_id = ObjectId(product_id)
+
+        # Cari transaksi dengan product_id dan status "On Process"
+        transaction = db.transaction.find_one({"product_id": product_id, "status_product": "On Process"})
+        
+        if not transaction:
+            return jsonify({'message': 'Transaksi tidak ditemukan atau status bukan "On Process".'}), 404
+        
+        # Update status_product menjadi "Canceled"
+        db.transaction.update_one(
+            {"product_id": product_id, "status_product": "On Process"},
+            {"$set": {"status_product": "Canceled"}}
+        )
+
+        return jsonify({'result': 'success'})
+    except Exception as e:
+        print('Error:', str(e))
+        return jsonify({'error': str(e)}), 500
+    
+@app.route('/selesai-order', methods=['POST'])
+def selesai_order():
+    try:
+        product_id = request.json.get('product_id')
+
+        if not product_id:
+            return jsonify({'message': 'Product ID diperlukan!'}), 400
+
+        # Konversi ke ObjectId
+        product_id = ObjectId(product_id)
+
+        # Cari transaksi dengan product_id dan status "On Process"
+        transaction = db.transaction.find_one({"product_id": product_id, "status_product": "On Delivery"})
+        
+        if not transaction:
+            return jsonify({'message': 'Transaksi tidak ditemukan atau status bukan "On Delivery".'}), 404
+        
+        # Update status_product menjadi "Canceled"
+        db.transaction.update_one(
+            {"product_id": product_id, "status_product": "On Delivery"},
+            {"$set": {"status_product": "Delivered"}}
+        )
+
+        return jsonify({'result': 'success'})
+    except Exception as e:
+        print('Error:', str(e))
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/submit_rating', methods=['POST'])
 def submit_rating():
     try:
