@@ -514,11 +514,12 @@
 
     <div id="ratingModal" class="modal">
         <div class="modal-content">
-            <h2 class="text-center">Name Product</h2>
+            {% for transaction in transactions %}
+            <h4 class="text-center">{{ transaction.name_product }}</h4>
 
             <div class="row">
                 <div class="col-md-4 d-flex align-items-center">
-                    <img src="../static/img/fruite-item-1.jpg" class="img-fluid circle border border-dark p-2"
+                    <img src="{{ transaction.image_product }}" class="img-fluid circle border border-dark p-2"
                         alt="Gambar Produk">
                 </div>
                 <div class="col-md-8">
@@ -543,6 +544,7 @@
                     </div>
                 </div>
             </div>
+            {% endfor %}
         </div>
     </div>
 
