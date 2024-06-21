@@ -39,28 +39,29 @@
             object-fit: cover;
             /* Ensure the image covers the container */
         }
+
         .hero-section {
             padding: 40px 0;
         }
-        
+
         .hero-tagline h1 {
-            font-size: 48px;
+            font-size: 60px;
             font-weight: 700;
         }
-        
+
         .hero-tagline p {
             font-size: 18px;
             font-weight: 500;
             color: #474443;
         }
-        
+
         .hero-img {
             max-width: 100%;
             position: relative;
             top: 40px;
             left: 100px;
         }
-        
+
         /* Media Queries */
         @media (max-width: 991px) {
             .hero-tagline h1 {
@@ -68,64 +69,79 @@
                 left: 0;
                 width: 100%;
             }
-        
+
             .hero-tagline p {
                 font-size: 16px;
                 left: 0;
                 width: 100%;
             }
-        
+
             .hero-img {
                 top: 20px;
                 left: 50px;
             }
         }
-        
+
         @media (max-width: 767px) {
             .hero-tagline h1 {
                 font-size: 28px;
                 left: 0;
                 width: 100%;
             }
-        
+
             .hero-tagline p {
                 font-size: 14px;
                 left: 0;
                 width: 100%;
             }
-        
+
             .hero-img {
                 top: 10px;
                 left: 20px;
             }
         }
-        
+
         @media (max-width: 576px) {
             .hero-section {
                 padding: 20px 0;
             }
-        
+
             .hero-tagline h1 {
                 font-size: 24px;
                 left: 0;
                 width: 100%;
             }
-        
+
             .hero-tagline p {
                 font-size: 12px;
                 left: 0;
                 width: 100%;
             }
-        
+
             .hero-img {
                 top: 0;
                 left: 0;
                 width: 100%;
             }
-        
-            
+
+
         }
-        
+
+        /* Tambahkan ini ke file CSS Anda */
+        .btn-green-large {
+            background-color: #ffffff;
+            color: black;
+            padding: 15px 23px;
+            font-size: 20px;
+            border: none;
+            border-radius: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-green-large:hover {
+            background-color: rgb(43, 206, 14);
+            color: white;
+        }
     </style>
 
 </head>
@@ -139,10 +155,13 @@
                 <div class="col-md-6 hero-tagline my-auto">
                     <h1>Buy your dream products</h1>
                     <p style="text-align: justify;">
-                        Welcome to Umbrella Project Shop, the best place to find high-quality products that meet your needs. We are an online store committed to providing a wide range of innovative products at affordable prices, from electronics to everyday necessities.
+                        Welcome to Umbrella Project Shop, the best place to find high-quality products that meet your
+                        needs. We are an online store committed to providing a wide range of innovative products at
+                        affordable prices, from electronics to everyday necessities.
                     </p>
-                    <button class="btn btn-light fw-bold" onclick="window.location.href = '/products';">
-                        <i class="bi bi-bag-fill"></i>
+                    <button class="btn btn-green-large btn-see-more fw-bold"
+                        onclick="window.location.href = '/products';">
+                        <i class="bi bi-bag-fill me-1"></i>
                         Buy Product
                     </button>
                 </div>
@@ -152,7 +171,7 @@
             </div>
         </div>
     </main>
-    
+
 
     <section class="best-selling">
         <div class="container">
@@ -162,7 +181,8 @@
                     <p class="mb-4">Best Selling Products is a collection of superior products that are most popular and
                         frequently purchased by customers at the Umbrella Project Shop. Here are some of our best
                         selling products:</p>
-                    <button class="btn btn-light fw-bold" style="background-color: var(--warna-biru-tua); color: white;"
+                    <button class="btn btn-see-more fw-bold"
+                        style="background-color: var(--warna-biru-tua); color: white; padding: 15px 23px; font-size: 20px;"
                         onclick="window.location.href = '/products'">See More
                         <i class="bi bi-arrow-right"></i></button>
                 </div>
@@ -174,7 +194,8 @@
                         <h5 class="mt-3 text-center fw-bold">{{ product.nama_produk | truncate(45, True, '...') }}</h5>
                         <p class="text-secondary" style="text-align: justify;">{{ product.deskripsi_produk |
                             truncate(115, True, '...') }}</p>
-                        <p class="text-center" style="font-size: 18px;"><strong>{{ product.harga_produk | rupiah }}</strong>
+                        <p class="text-center" style="font-size: 18px;"><strong>{{ product.harga_produk | rupiah
+                                }}</strong>
                         </p>
                     </div>
                 </div>
@@ -243,14 +264,24 @@
                     </div>
                     {% endfor %} -->
                     <div class="col-md-3 mb-2">
-                        <div class="product-card kategori" onclick="window.location.href = '/all-products?filter=Light'">
+                        <div class="product-card kategori"
+                            onclick="window.location.href = '/all-products?filter=Light'">
                             <img src="../static/imgKategori/kategori-light.jpg" alt="light"
                                 class="img-custom-size fixed-height">
                             <h5 class="mt-3 fw-bold">Light</h5>
                         </div>
                     </div>
                     <div class="col-md-3 mb-2">
-                        <div class="product-card kategori" onclick="window.location.href = '/all-products?filter=Other'">
+                        <div class="product-card kategori"
+                            onclick="window.location.href = '/all-products?filter=Electronic'">
+                            <img src="../static/imgKategori/kategori-electronic.jpg" alt="electronic"
+                                class="img-custom-size fixed-height">
+                            <h5 class="mt-3 fw-bold">Electronic</h5>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <div class="product-card kategori"
+                            onclick="window.location.href = '/all-products?filter=Other'">
                             <img src="../static/imgKategori/kategori-other.jpg" alt="other"
                                 class="img-custom-size fixed-height">
                             <h5 class="mt-3 fw-bold">Other</h5>
@@ -259,7 +290,9 @@
                 </div>
                 <div class="row justify-content-center pb-5">
                     <div class="col-md-6 text-center">
-                        <button class="btn btn-light fw-bold" onclick="window.location.href = '/all-products'">See More
+                        <button class="btn btn-see-more fw-bold"
+                            style="background-color: white; color: var(--warna-biru-tua); padding: 15px 23px; font-size: 20px;"
+                            onclick="window.location.href = '/all-products'">See More
                             <i class="bi bi-arrow-right"></i>
                         </button>
                     </div>

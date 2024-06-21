@@ -1066,8 +1066,19 @@ def update_order_status():
 
 @app.route('/productsAdmin', methods=["GET"])
 def productsAdmin():
+    token_receive = request.cookies.get(TOKEN_KEY)
+    
+    if not ('user_id' in session or token_receive):
+        return redirect(url_for('login_admin'))  # Redirect to the login page if not logged in
+
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        user_info = db.admin.find_one({'email': payload.get('id')})
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        user_info = None
+        
     product = list(db.products.find({}).sort("created_at", -1))
-    return render_template('admin/admin_products.html', product=product)
+    return render_template('admin/admin_products.html', product=product, is_logged_in=True, user_info=user_info)
 
 @app.route('/addProduct', methods=["GET", "POST"])
 def addProduct():

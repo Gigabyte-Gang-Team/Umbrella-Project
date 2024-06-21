@@ -157,6 +157,7 @@
           <table class="table table-centered table-nowrap mb-2 rounded mt-3">
             <thead class="thead-light" style="vertical-align: middle;">
               <tr>
+                <th class="border-0 text-center">No</th>
                 <th class="border-0 rounded-start text-center">Order ID</th>
                 <th class="border-0 text-center">Tanggal Order</th>
                 <th class="border-0 text-center">Nama User</th>
@@ -167,6 +168,7 @@
             </thead>
             {% for order in orders %}
             <tr>
+              <td class="text-center">{{ loop.index }}</td>
               <td class="text-center order-id" data-order-id="{{ order._id }}" data-user-id="{{ order.user_id }}"
                 onclick="openModal('{{ order._id }}', '{{ order.user_id }}')"
                 style="cursor: pointer; text-decoration: underline; width: 220px;">#{{ order._id }}</td>

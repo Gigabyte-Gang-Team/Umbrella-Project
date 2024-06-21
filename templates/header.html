@@ -1,5 +1,37 @@
+<style>
+    /* Sticky Header */
+    .sticky-header {
+        position: sticky;
+        top: 0;
+        background: #fff;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        z-index: 1000;
+    }
+
+    .sticky-header nav ul {
+        display: flex;
+        list-style: none;
+    }
+
+    .sticky-header nav ul li {
+        position: relative;
+    }
+
+    .sticky-header nav ul li .dropdown {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background: #fff;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .sticky-header nav ul li:hover .dropdown {
+        display: block;
+    }
+</style>
 <!-- Header -->
-<nav class="navbar navbar-expand-lg bg-body">
+<nav class="sticky-header navbar navbar-expand-lg bg-body">
     <div class="container">
         <a class="navbar-brand" href="/">
             <img src="../static/img/Logo.png" alt="Bootstrap" width="70" />

@@ -49,13 +49,13 @@
             {% for item in product[:1] %}
             <div class="img-banner col-md-4">
                 <img src="../static/imgProduct/{{ item.gambar_produk[0] }}" alt="img-banner"
-                    style="width: 100%; height: 340px;">
+                    style="width: 100%; height: 410px;">
             </div>
             <div class="col-md-6 tagline-banner produk" data-id="{{ item._id }}">
-                <h2 style="color: #73A336;">Our New Product</h2>
-                <h2>{{ item.nama_produk }}</h2>
+                <h2 style="color: var(--warna-hijau); font-weight: bold;">Our New Product</h2>
+                <h2 class="fw-bold">{{ item.nama_produk }}</h2>
                 <h5 class="text-secondary mt-4">{{ item.deskripsi_produk | truncate(170, True, '...') }}</h5>
-                <button class="btn btn-check-product fw-bold mt-4 fs-5 text-white"
+                <button class="btn btn-check-product fw-bold mt-4 fs-5 text-white" style="background-color: var(--warna-hijau)"
                     onclick="redirectToDetail('{{ item._id }}')">Check Product<i
                         class="fas fa-arrow-right px-2"></i></button>
             </div>

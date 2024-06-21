@@ -319,7 +319,7 @@
                             
                             <div class="details">
                                 <h3>{{ transaction.name_product }}</h3>
-                                <p class="quantity">Jumlah beli:{{ transaction.quantity_product }}</p>
+                                <p class="quantity">Jumlah beli : {{ transaction.quantity_product }}</p>
                             </div>
                             <div class="status">
                                 {% if transaction.status_product == "On Process" %}
@@ -343,7 +343,7 @@
                                 <span>{{ transaction.status_product }}</span>
                                 </div>
                                 {% endif %}
-                                <div class="price">Rp {{ transaction.price_product }}</div>
+                                <div class="price">{{ transaction.price_product | rupiah }}</div>
                                 <div class="date">{{ transaction.ordered_date }}</div>
                             </div>
                         </div>
@@ -381,8 +381,8 @@
                             </div>
                             
                             <div class="details">
-                                <h2>{{ transaction.name_product }}</h2>
-                                <p class="quantity">Jumlah beli:{{ transaction.quantity_product }}</p>
+                                <h3>{{ transaction.name_product }}</h3>
+                                <p class="quantity">Jumlah beli : {{ transaction.quantity_product }}</p>
                             </div>
                             <div class="status">
                                 {% if transaction.status_product == "On Delivery" %}
@@ -391,7 +391,7 @@
                                     <span>{{ transaction.status_product }}</span>
                                 </div>
                                 {% endif %}
-                                <div class="price">Rp {{ transaction.price_product }}</div>
+                                <div class="price">{{ transaction.price_product | rupiah }}</div>
                                 <div class="date">{{ transaction.ordered_date }}</div>
                             </div>
                         </div>      
@@ -430,8 +430,8 @@
                             </div>
                             
                             <div class="details">
-                                <h2>{{ transaction.name_product }}</h2>
-                                <p class="quantity">Jumlah beli:{{ transaction.quantity_product }}</p>
+                                <h3>{{ transaction.name_product }}</h3>
+                                <p class="quantity">Jumlah beli : {{ transaction.quantity_product }}</p>
                             </div>
                             <div class="status">
                                 {% if transaction.status_product == "Delivered" %}
@@ -441,7 +441,7 @@
                                   </div>
                                 {% endif %}
 
-                                <div class="price">Rp {{ transaction.price_product }}</div>
+                                <div class="price">{{ transaction.price_product | rupiah}}</div>
                                 <div class="date">{{ transaction.ordered_date }}</div>
                             </div>
                         </div>      
@@ -480,8 +480,8 @@
                             </div>
                             
                             <div class="details">
-                                <h2>{{ transaction.name_product }}</h2>
-                                <p class="quantity">Jumlah beli:{{ transaction.quantity_product }}</p>
+                                <h3>{{ transaction.name_product }}</h3>
+                                <p class="quantity">Jumlah beli : {{ transaction.quantity_product }}</p>
                             </div>
                             <div class="status">
                                 {% if transaction.status_product == "Canceled" %}
@@ -491,7 +491,7 @@
                                   </div>
                                 {% endif %}
 
-                                <div class="price">Rp {{ transaction.price_product }}</div>
+                                <div class="price">{{ transaction.price_product | rupiah }}</div>
                                 <div class="date">{{ transaction.ordered_date }}</div>
                             </div>
                         </div>      
