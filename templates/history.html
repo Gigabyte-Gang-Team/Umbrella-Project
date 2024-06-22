@@ -15,8 +15,9 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700;1,800&display=swap"
         rel="stylesheet">
-
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <!-- Logo Title -->
     <link rel="icon" href="../static/img/Logo.png">
     <title>Riwayat Pembelian</title>
@@ -278,6 +279,22 @@
             border-radius: 5%;
         }
 
+        .product-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .product-details {
+            margin-left: 28px;
+        }
+
+        .hidden-button {
+            visibility: hidden;
+            pointer-events: none;
+        }
     </style>
 
 </head>
@@ -286,7 +303,7 @@
 
     {% include "header.html" %}
     <div class="container ">
-        <span class="back-link" onclick="window.history.back()"><i class="fas fa-chevron-left px-2"></i>
+        <span class="back-link" onclick="window.history.back()">
             < Back</span>
                 <div class="navbar-history-container">
                     <div class="navbar-history">
@@ -303,17 +320,21 @@
                         <!-- mulai item -->
                         {% for transaction in transactions %}
                         <div class="item transaction-item" data-product-id="{{ transaction.product_id }}">
-                            <div>
+                            <div class="product-container">
                                 <img src="{{ transaction.image_product }}" alt="{{ transaction.name_product }}">
                                 <div class="actions">
                                     {% if transaction.status_product == "On Process" %}
                                     <button class="buy-again"
-                                        style="background-color: red; color: white; cursor: pointer;" onclick="cancel('{{ transaction.product_id }}')"
-                                        value="Canceled">
-                                        <span class="cart-icon"></span> Batalkan pesanan
+                                        style="background-color: red; color: white; cursor: pointer;"
+                                        onclick="cancel('{{ transaction.product_id }}')" value="Canceled">
+                                        <i class="material-icons me-1 fs-4">&#xe5c9;</i>
+                                        Cancel Order
                                     </button>
                                     {% elif transaction.status_product == "On Delivery" %}
-                                    <button class="buy-again" style="cursor: pointer;" onclick="selesai('{{ transaction.product_id }}')" value="Delivered">
+                                    <button class="buy-again"
+                                        style="cursor: pointer; margin-left:20px; margin-right:20px;"
+                                        onclick="selesai('{{ transaction.product_id }}')" value="Delivered">
+                                        <i class="fa fa-check-square-o me-2" style="font-size:20px"></i>
                                         Pesanan Selesai
                                     </button>
                                     {% elif transaction.status_product == "Delivered" %}
@@ -327,8 +348,7 @@
                                             </svg>
                                         </span> Beli Lagi
                                     </button>
-                                    <button class="rating-btn"
-                                        onclick="openRatingModal(this)">
+                                    <button class="rating-btn" onclick="openRatingModal(this)">
                                         <span class="cart-icon">
                                             <svg width="20" height="20" style="margin-right: 5px;" viewBox="0 0 23 23"
                                                 fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -343,15 +363,11 @@
                                         Rate
                                     </button>
                                     {% elif transaction.status_product == "Canceled" %}
-                                    <button class="buy-again" onclick="buyAgain('{{ transaction.product_id }}')">
-                                        <span class="cart-icon">
-                                            <svg width="22" height="15" viewBox="0 0 22 15" fill="none"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path
-                                                    d="M1.12667 0.00507108C0.776253 0.0580964 0.462456 0.240602 0.254317 0.512437C0.0461769 0.784273 -0.0392565 1.12317 0.016811 1.45458C0.0728784 1.78599 0.265854 2.08276 0.553285 2.27961C0.840716 2.47645 1.19906 2.55725 1.54948 2.50423H5.51328L5.75111 3.12901L6.83454 6.25296L7.91798 9.3769C8.02368 9.70179 8.47291 10.0017 8.81644 10.0017H18.0653C18.4353 10.0017 18.8581 9.70179 18.9638 9.3769L21.1042 3.12901C21.2099 2.80412 21.0514 2.50423 20.6814 2.50423H8.94857L7.94441 0.704834C7.83745 0.498303 7.67231 0.32369 7.46716 0.200224C7.26201 0.0767581 7.02482 0.00922845 6.78169 0.00507108L1.49663 0.00507108C1.41751 -0.00169036 1.33792 -0.00169036 1.2588 0.00507108C1.206 0.00206939 1.15305 0.00206939 1.10025 0.00507108L1.12667 0.00507108ZM9.47708 12.5008C8.73717 12.5008 8.15581 13.0507 8.15581 13.7504C8.15581 14.4502 8.73717 15 9.47708 15C10.217 15 10.7983 14.4502 10.7983 13.7504C10.7983 13.0507 10.217 12.5008 9.47708 12.5008ZM17.4047 12.5008C16.6648 12.5008 16.0834 13.0507 16.0834 13.7504C16.0834 14.4502 16.6648 15 17.4047 15C18.1446 15 18.7259 14.4502 18.7259 13.7504C18.7259 13.0507 18.1446 12.5008 17.4047 12.5008Z"
-                                                    fill="black" />
-                                            </svg>
-                                        </span> Beli Lagi
+                                    <button class="buy-again hidden-button"
+                                        style="cursor: pointer; margin-left:20px; margin-right:20px;" onclick=""
+                                        value="Delivered">
+                                        <i class="fa fa-check-square-o me-2" style="font-size:20px"></i>
+                                        Pesanan Selesai
                                     </button>
                                     {% endif %}
                                 </div>
@@ -359,7 +375,7 @@
 
                             <div class="details">
                                 <h3>{{ transaction.name_product }}</h3>
-                                <p class="quantity">Jumlah beli: {{ transaction.quantity_product }}</p>
+                                <p class="quantity">Jumlah beli : {{ transaction.quantity_product }}</p>
                             </div>
                             <div class="status">
                                 {% if transaction.status_product == "On Process" %}
@@ -383,8 +399,9 @@
                                     <span>{{ transaction.status_product }}</span>
                                 </div>
                                 {% endif %}
-                                <div class="price">{{ transaction.price_product | rupiah }}</div>
                                 <div class="date">{{ transaction.ordered_date }}</div>
+                                <div class="date">{{ transaction.ordered_time }}</div>
+                                <div class="price">{{ transaction.price_product | rupiah }}</div>
                             </div>
                         </div>
                         {% endfor %}
@@ -398,10 +415,13 @@
                         {% for transaction in transactions %}
                         {% if transaction.status_product == "On Delivery" %}
                         <div class="item">
-                            <div>
+                            <div class="product-container">
                                 <img src="{{ transaction.image_product }}" alt="{{ transaction.name_product }}">
                                 <div class="actions">
-                                    <button class="buy-again" style="cursor: pointer;" onclick="selesai('{{ transaction.product_id }}')">
+                                    <button class="buy-again"
+                                        style="cursor: pointer; margin-left:20px; margin-right:20px;"
+                                        onclick="selesai('{{ transaction.product_id }}')">
+                                        <i class="fa fa-check-square-o me-2" style="font-size:20px"></i>
                                         Pesanan Selesai
                                     </button>
                                 </div>
@@ -409,7 +429,7 @@
 
                             <div class="details">
                                 <h2>{{ transaction.name_product }}</h2>
-                                <p class="quantity">Jumlah beli: {{ transaction.quantity_product }}</p>
+                                <p class="quantity">Jumlah beli : {{ transaction.quantity_product }}</p>
                             </div>
                             <div class="status">
                                 {% if transaction.status_product == "On Delivery" %}
@@ -418,8 +438,9 @@
                                     <span>{{ transaction.status_product }}</span>
                                 </div>
                                 {% endif %}
-                                <div class="price">{{ transaction.price_product | rupiah }}</div>
                                 <div class="date">{{ transaction.ordered_date }}</div>
+                                <div class="date">{{ transaction.ordered_time }}</div>
+                                <div class="price">{{ transaction.price_product | rupiah }}</div>
                             </div>
                         </div>
                         {% endif %}
@@ -434,7 +455,7 @@
                         {% for transaction in transactions %}
                         {% if transaction.status_product == "Delivered" %}
                         <div class="item transaction-item" data-product-id="{{ transaction.product_id }}">
-                            <div>
+                            <div class="product-container">
                                 <img src="{{ transaction.image_product }}" alt="{{ transaction.name_product }}">
                                 <div class="actions">
                                     <button class="buy-again" onclick="buyAgain('{{ transaction.product_id }}')">
@@ -466,7 +487,7 @@
 
                             <div class="details">
                                 <h2>{{ transaction.name_product }}</h2>
-                                <p class="quantity">Jumlah beli: {{ transaction.quantity_product }}</p>
+                                <p class="quantity">Jumlah beli : {{ transaction.quantity_product }}</p>
                             </div>
                             <div class="status">
                                 {% if transaction.status_product == "Delivered" %}
@@ -476,8 +497,9 @@
                                 </div>
                                 {% endif %}
 
-                                <div class="price">{{ transaction.price_product | rupiah }}</div>
                                 <div class="date">{{ transaction.ordered_date }}</div>
+                                <div class="date">{{ transaction.ordered_time }}</div>
+                                <div class="price">{{ transaction.price_product | rupiah }}</div>
                             </div>
                         </div>
                         {% endif %}
@@ -492,25 +514,21 @@
                         {% for transaction in transactions %}
                         {% if transaction.status_product == "Canceled" %}
                         <div class="item">
-                            <div>
+                            <div class="product-container">
                                 <img src="{{ transaction.image_product }}" alt="{{ transaction.name_product }}">
                                 <div class="actions">
-                                    <button class="buy-again" onclick="buyAgain('{{ transaction.product_id}}')">
-                                        <span class="cart-icon">
-                                            <svg width="22" height="15" viewBox="0 0 22 15" fill="none"
-                                                xmlns="http://www.w3.org/2000/svg">
-                                                <path
-                                                    d="M1.12667 0.00507108C0.776253 0.0580964 0.462456 0.240602 0.254317 0.512437C0.0461769 0.784273 -0.0392565 1.12317 0.016811 1.45458C0.0728784 1.78599 0.265854 2.08276 0.553285 2.27961C0.840716 2.47645 1.19906 2.55725 1.54948 2.50423H5.51328L5.75111 3.12901L6.83454 6.25296L7.91798 9.3769C8.02368 9.70179 8.47291 10.0017 8.81644 10.0017H18.0653C18.4353 10.0017 18.8581 9.70179 18.9638 9.3769L21.1042 3.12901C21.2099 2.80412 21.0514 2.50423 20.6814 2.50423H8.94857L7.94441 0.704834C7.83745 0.498303 7.67231 0.32369 7.46716 0.200224C7.26201 0.0767581 7.02482 0.00922845 6.78169 0.00507108L1.49663 0.00507108C1.41751 -0.00169036 1.33792 -0.00169036 1.2588 0.00507108C1.206 0.00206939 1.15305 0.00206939 1.10025 0.00507108L1.12667 0.00507108ZM9.47708 12.5008C8.73717 12.5008 8.15581 13.0507 8.15581 13.7504C8.15581 14.4502 8.73717 15 9.47708 15C10.217 15 10.7983 14.4502 10.7983 13.7504C10.7983 13.0507 10.217 12.5008 9.47708 12.5008ZM17.4047 12.5008C16.6648 12.5008 16.0834 13.0507 16.0834 13.7504C16.0834 14.4502 16.6648 15 17.4047 15C18.1446 15 18.7259 14.4502 18.7259 13.7504C18.7259 13.0507 18.1446 12.5008 17.4047 12.5008Z"
-                                                    fill="black" />
-                                            </svg>
-                                        </span> Beli Lagi
+                                    <button class="buy-again hidden-button"
+                                        style="cursor: pointer;" onclick=""
+                                        value="Delivered">
+                                        <i class="fa fa-check-square-o me-2" style="font-size:20px"></i>
+                                        Pesanan Selesai
                                     </button>
                                 </div>
                             </div>
 
                             <div class="details" style="margin-left: 20px;">
                                 <h2>{{ transaction.name_product }}</h2>
-                                <p class="quantity">Jumlah beli: {{ transaction.quantity_product }}</p>
+                                <p class="quantity">Jumlah beli : {{ transaction.quantity_product }}</p>
                             </div>
                             <div class="status">
                                 {% if transaction.status_product == "Canceled" %}
@@ -520,14 +538,13 @@
                                 </div>
                                 {% endif %}
 
-                                <div class="price">{{ transaction.price_product | rupiah }}</div>
                                 <div class="date">{{ transaction.ordered_date }}</div>
+                                <div class="date">{{ transaction.ordered_time }}</div>
+                                <div class="price">{{ transaction.price_product | rupiah }}</div>
                             </div>
                         </div>
                         {% endif %}
                         {% endfor %}
-
-
                     </div>
                 </div>
     </div>
