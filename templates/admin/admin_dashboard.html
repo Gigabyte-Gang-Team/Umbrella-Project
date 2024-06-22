@@ -159,11 +159,11 @@
               <tr>
                 <th class="border-0 text-center">No</th>
                 <th class="border-0 rounded-start text-center">Order ID</th>
-                <th class="border-0 text-center">Tanggal Order</th>
-                <th class="border-0 text-center">Nama User</th>
-                <th class="border-0 text-center">Status Pesanan</th>
-                <th class="border-0 text-center">Harga</th>
-                <th class="border-0 text-center">Bukti Transfer</th>
+                <th class="border-0 text-center">Date Order</th>
+                <th class="border-0 text-center">Username</th>
+                <th class="border-0 text-center">Order Status</th>
+                <th class="border-0 text-center">Price</th>
+                <th class="border-0 text-center">Transfer Receipt</th>
               </tr>
             </thead>
             {% for order in orders %}
@@ -208,8 +208,7 @@
               <td class="d-flex justify-content-center"><button
                   style="padding: 10px; background-color: rgb(88, 173, 207); color: white ; border: 0; border-radius: 6px; font-size: small;"
                   value=""
-                  onclick="openProofModal('{{ url_for('static', filename='' ~ order.bukti_trf_product) }}')">Bukti
-                  Transfer</button>
+                  onclick="openProofModal('{{ url_for('static', filename='' ~ order.bukti_trf_product) }}')">Transfer Receipt</button>
               </td>
               {% endif %}
             </tr>

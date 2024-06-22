@@ -79,14 +79,14 @@
                     enctype="multipart/form-data">
                     <!-- Bagian lain dari form -->
 
-                    <p class="fw-bold">Gambar Produk</p>
+                    <p class="fw-bold">Product Image</p>
                     <div
                         style="border: 2px solid black; margin-bottom: 20px; padding: 20px; border-radius: 6px; justify-content: center;">
                         <div class="row mb-3">
                             <div class="d-flex justify-content-center">
                                 {% for gambar in product.gambar_produk %}
                                 <div class="row justify-content-center text-center" style="padding: 5px;">
-                                    <span class="fw-bold">Gambar {{ loop.index }}</span>
+                                    <span class="fw-bold">Image {{ loop.index }}</span>
                                     <img src="../static/imgProduct/{{ gambar }}" alt="{{ gambar }}"
                                         style="border: 2px solid green; cursor: pointer; width: 100px;"
                                         data-image="../static/imgProduct/{{ gambar }}" data-gambar="{{ gambar }}"
@@ -97,8 +97,7 @@
                             <div id="preview-container"
                                 style="margin-top: 40px; margin-bottom: 10px; width: 200px; display: flex;"></div>
                             <div>
-                                <label for="gambar_produk" class="fw-bold" style=" margin-top: 20px;">Tambah Gambar
-                                    Produk</label>
+                                <label for="gambar_produk" class="fw-bold" style=" margin-top: 20px;">Add Product Image</label>
                                 <input type="file" class="form-control" accept=".png,.jpg,.jpeg" id="gambar_produk"
                                     name="gambar_produk" style="border-radius: 13px;" placeholder="Enter the Image"
                                     multiple onchange="previewImages(event)" />
@@ -106,16 +105,14 @@
                         </div>
 
                         <div class="mb-3">
-                            <label for="delete_index" class="form-label fw-bold">Nomor Gambar Produk yang Akan Dihapus
-                                <span style="color: brown; margin-left: 10px; font-weight: bold;">(*hapus satu
-                                    gambar)</span>
+                            <label for="delete_index" class="form-label fw-bold">Product Image Number to be Deleted
+                                <span style="color: brown; margin-left: 10px; font-weight: bold;">(*delete one image)</span>
                             </label>
                             <input type="number" class="form-control" id="delete_index" name="delete_index" min="1"
-                                placeholder="Masukkan nomor gambar" />
+                                placeholder="Enter image number" />
                         </div>
                         <div class="mb-3">
-                            <button type="button" class="btn btn-danger" onclick="deleteImageFromDatabase()">Hapus
-                                Gambar</button>
+                            <button type="button" class="btn btn-danger" onclick="deleteImageFromDatabase()">Delete Image</button>
                         </div>
                     </div>
 
@@ -140,27 +137,27 @@
                     <!-- Modal End -->
 
                     <div class="mb-3">
-                        <label for="exampleInputEmail1" class="form-label fw-bold">Nama Produk</label>
+                        <label for="exampleInputEmail1" class="form-label fw-bold">Name Product</label>
                         <input type="text" class="form-control" name="nama_produk" style="border-radius: 13px;"
                             placeholder="Enter the Products Name" required value="{{ product.nama_produk }}" />
                     </div>
                     <div class="mb-3">
-                        <label for="exampleInputPassword1" class="form-label fw-bold">Deskripsi Produk</label>
+                        <label for="exampleInputPassword1" class="form-label fw-bold">Description</label>
                         <textarea class="form-control" name="deskripsi_produk" style="border-radius: 13px;"
                             placeholder="Enter the Description of Product"
                             required>{{ product.deskripsi_produk }}</textarea>
                     </div>
                     <div class="mb-3">
-                        <label for="exampleInputPassword1" class="form-label fw-bold">Merk Produk</label>
+                        <label for="exampleInputPassword1" class="form-label fw-bold">Brand</label>
                         <textarea class="form-control" name="merk_produk" style="border-radius: 13px;"
                             placeholder="Enter the Brand of Product" required>{{ product.merk_produk }}</textarea>
                     </div>
                     <div class="mb-3">
-                        <label for="kategori_produk" class="mb-2 fw-bold">Kategori Produk :</label>
+                        <label for="kategori_produk" class="mb-2 fw-bold">Category :</label>
                         <div>
                             <select id="kategori_produk" name="kategori_produk" class="form-select-sm text-center"
                                 style="font-size: medium; border: 2px solid rgb(218, 218, 218); width: 180px; border-radius: 13px;">
-                                <option value="" hidden>Pilih Kategori</option>
+                                <option value="" hidden>Select Category</option>
                                 <option value="Light" {% if product.kategori_produk=='Light' %} selected {% endif %}>
                                     Light</option>
                                 <option value="Electronic" {% if product.kategori_produk=='Electronic' %} selected {%
@@ -172,12 +169,12 @@
                         </div>
                     </div>
                     <div class="mb-3">
-                        <label for="exampleInputPassword1" class="form-label fw-bold">Harga produk</label>
+                        <label for="exampleInputPassword1" class="form-label fw-bold">Price</label>
                         <input type="number" class="form-control" name="harga_produk" style="border-radius: 13px;"
                             placeholder="Enter the Price" required value="{{ product.harga_produk }}" />
                     </div>
                     <div class="mb-3">
-                        <label for="exampleInputPassword1" class="form-label fw-bold">Stok produk</label>
+                        <label for="exampleInputPassword1" class="form-label fw-bold">Stock</label>
                         <input type="number" class="form-control" name="stok_produk" style="border-radius: 13px;"
                             placeholder="Enter the Price" required value="{{ product.stok_produk }}" />
                     </div>
