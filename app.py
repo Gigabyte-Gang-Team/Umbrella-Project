@@ -54,6 +54,13 @@ def home():
         try:
             payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
             user_info = db.users.find_one({'email': payload.get('id')})
+
+            if payload['role'] == 'admin':
+                session.clear()
+                resp = make_response(redirect(url_for('home')))
+                resp.delete_cookie(TOKEN_KEY)
+                return resp
+                
         except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
             pass
 
@@ -83,6 +90,13 @@ def search():
         try:
             payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
             user_info = db.users.find_one({'email': payload.get('id')})
+
+            if payload['role'] == 'admin':
+                session.clear()
+                resp = make_response(redirect(url_for('home')))
+                resp.delete_cookie(TOKEN_KEY)
+                return resp
+                
         except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
             pass
 
@@ -108,6 +122,20 @@ def add_header(response):
 
 @app.route('/login', methods=['GET'])
 def login():
+    token_receive = request.cookies.get(TOKEN_KEY)
+
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+
+        if payload['role'] == 'admin':
+                session.clear()
+                resp = make_response(redirect(url_for('login')))
+                resp.delete_cookie(TOKEN_KEY)
+                return resp
+        
+    except:
+        None
+        
     msg = request.args.get('msg')
     return render_template('login.html', msg=msg)
 
@@ -131,6 +159,7 @@ def sign_in():
     if result:
         payload = {
             "id": email_receive,
+            "role": "user",
             "exp": datetime.utcnow() + timedelta(seconds=60 * 60 * 24),
         }
         token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
@@ -212,6 +241,13 @@ def about():
         try:
             payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
             user_info = db.users.find_one({'email': payload.get('id')})
+
+            if payload['role'] == 'admin':
+                session.clear()
+                resp = make_response(redirect(url_for('about')))
+                resp.delete_cookie(TOKEN_KEY)
+                return resp
+
         except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
             pass
 
@@ -231,6 +267,13 @@ def products():
         try:
             payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
             user_info = db.users.find_one({'email': payload.get('id')})
+
+            if payload['role'] == 'admin':
+                session.clear()
+                resp = make_response(redirect(url_for('products')))
+                resp.delete_cookie(TOKEN_KEY)
+                return resp
+                
         except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
             pass
 
@@ -252,6 +295,13 @@ def all_products():
         try:
             payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
             user_info = db.users.find_one({'email': payload.get('id')})
+
+            if payload['role'] == 'admin':
+                session.clear()
+                resp = make_response(redirect(url_for('all_products')))
+                resp.delete_cookie(TOKEN_KEY)
+                return resp
+
         except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
             pass
 
@@ -288,6 +338,13 @@ def detail_product(product_id):
         try:
             payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
             user_info = db.users.find_one({'email': payload.get('id')})
+
+            if payload['role'] == 'admin':
+                session.clear()
+                resp = make_response(redirect(url_for('detail_product', product_id=product_id)))
+                resp.delete_cookie(TOKEN_KEY)
+                return resp
+
         except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
             pass
 
@@ -472,6 +529,13 @@ def purchaseBuy():
             # Decode token untuk mendapatkan informasi pengguna
             payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
             user_info = db.users.find_one({'email': payload.get('id')})
+
+            if payload['role'] != 'user':
+                session.clear()
+                resp = make_response(redirect(url_for('home')))
+                resp.delete_cookie(TOKEN_KEY)
+                return resp
+
         except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
             pass
 
@@ -570,6 +634,13 @@ def purchase():
             # Decode token untuk mendapatkan informasi pengguna
             payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
             user_info = db.users.find_one({'email': payload.get('id')})
+
+            if payload['role'] == 'admin':
+                session.clear()
+                resp = make_response(redirect(url_for('home')))
+                resp.delete_cookie(TOKEN_KEY)
+                return resp
+
         except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
             pass
 
@@ -621,6 +692,13 @@ def cart():
         try:
             payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
             user_info = db.users.find_one({'email': payload.get('id')})
+
+            if payload['role'] == 'admin':
+                session.clear()
+                resp = make_response(redirect(url_for('home')))
+                resp.delete_cookie(TOKEN_KEY)
+                return resp
+
         except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
             pass
 
@@ -672,6 +750,13 @@ def update_cart():
         try:
             payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
             user_info = db.users.find_one({'email': payload.get('id')})
+
+            if payload['role'] == 'admin':
+                session.clear()
+                resp = make_response(redirect(url_for('home')))
+                resp.delete_cookie(TOKEN_KEY)
+                return resp
+                
         except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
             return jsonify({'result': 'error', 'message': 'Invalid token'}), 401
 
@@ -728,6 +813,12 @@ def update():
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         user_info = db.users.find_one({'email': payload.get('id')})
         email = payload.get('id')
+
+        if payload['role'] == 'admin':
+            session.clear()
+            resp = make_response(redirect(url_for('home')))
+            resp.delete_cookie(TOKEN_KEY)
+            return resp
         
         if request.method == 'POST':
             username_receive = request.form.get('username_give')
@@ -776,6 +867,13 @@ def riwayat():
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         user_info = db.users.find_one({'email': payload.get('id')})
+
+        if payload['role'] == 'admin':
+            session.clear()
+            resp = make_response(redirect(url_for('home')))
+            resp.delete_cookie(TOKEN_KEY)
+            return resp
+            
         if user_info:
             user_id = user_info['_id']
             # Mendapatkan data transaksi berdasarkan user_id
@@ -1074,11 +1172,25 @@ def transaction_cart():
 ## Admin Side
 @app.route('/login/admin', methods=['GET'])
 def login_admin():
+    token_receive = request.cookies.get(TOKEN_KEY)
+
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+
+        if payload['role'] != 'admin':
+            session.clear()
+            resp = make_response(redirect(url_for('login_admin')))
+            resp.delete_cookie(TOKEN_KEY)
+            return resp
+    except:
+        None
+        
     msg = request.args.get('msg')
     return render_template('admin/adm-login.html', msg=msg)
 
 @app.route('/logout/admin')
 def logout_admin():
+    session.clear()
     resp = make_response(redirect(url_for('login_admin')))
     resp.delete_cookie(TOKEN_KEY)
     return resp
@@ -1097,6 +1209,7 @@ def sign_in_admin():
     if result:
         payload = {
             "id": email_receive,
+            "role": "admin",
             "exp": datetime.utcnow() + timedelta(seconds=60 * 60 * 24),
         }
         token = jwt.encode(payload, SECRET_KEY, algorithm="HS256")
@@ -1166,6 +1279,13 @@ def homeAdmin():
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         user_info = db.admin.find_one({'email': payload.get('id')})
+
+        if payload['role'] != 'admin':
+            session.clear()
+            resp = make_response(redirect(url_for('login_admin')))
+            resp.delete_cookie(TOKEN_KEY)
+            return resp
+            
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         user_info = None
         
@@ -1230,6 +1350,13 @@ def productsAdmin():
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         user_info = db.admin.find_one({'email': payload.get('id')})
+
+        if payload['role'] != 'admin':
+            session.clear()
+            resp = make_response(redirect(url_for('login_admin')))
+            resp.delete_cookie(TOKEN_KEY)
+            return resp
+            
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         user_info = None
 
@@ -1238,6 +1365,24 @@ def productsAdmin():
 
 @app.route('/addProduct', methods=["GET", "POST"])
 def addProduct():
+    token_receive = request.cookies.get(TOKEN_KEY)
+    
+    if not ('user_id' in session or token_receive):
+        return redirect(url_for('login_admin'))  # Redirect to the login page if not logged in
+
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        user_info = db.admin.find_one({'email': payload.get('id')})
+
+        if payload['role'] != 'admin':
+            session.clear()
+            resp = make_response(redirect(url_for('login_admin')))
+            resp.delete_cookie(TOKEN_KEY)
+            return resp
+        
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        user_info = None
+        
     if request.method == 'POST':
         # Mengambil data dari form
         nama = request.form.get('nama_produk')
@@ -1296,6 +1441,24 @@ def addProduct():
 
 @app.route('/editProduct/<string:_id>', methods=["GET", "POST"])
 def editProduct(_id):
+    token_receive = request.cookies.get(TOKEN_KEY)
+    
+    if not ('user_id' in session or token_receive):
+        return redirect(url_for('login_admin'))  # Redirect to the login page if not logged in
+
+    try:
+        payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
+        user_info = db.admin.find_one({'email': payload.get('id')})
+
+        if payload['role'] != 'admin':
+            session.clear()
+            resp = make_response(redirect(url_for('login_admin')))
+            resp.delete_cookie(TOKEN_KEY)
+            return resp
+        
+    except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
+        user_info = None
+        
     if request.method == 'POST':
         # Mendapatkan data dari form
         nama = request.form.get('nama_produk')
@@ -1404,6 +1567,13 @@ def UsersAdmin():
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         user_info = db.admin.find_one({'email': payload.get('id')})
+
+        if payload['role'] != 'admin':
+            session.clear()
+            resp = make_response(redirect(url_for('login_admin')))
+            resp.delete_cookie(TOKEN_KEY)
+            return resp
+            
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         user_info = None
 
@@ -1449,6 +1619,13 @@ def Admins():
     try:
         payload = jwt.decode(token_receive, SECRET_KEY, algorithms=['HS256'])
         user_info = db.admin.find_one({'email': payload.get('id')})
+
+        if payload['role'] != 'admin':
+            session.clear()
+            resp = make_response(redirect(url_for('login_admin')))
+            resp.delete_cookie(TOKEN_KEY)
+            return resp
+            
     except (jwt.ExpiredSignatureError, jwt.exceptions.DecodeError):
         user_info = None
 
