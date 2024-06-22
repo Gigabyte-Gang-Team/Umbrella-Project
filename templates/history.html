@@ -571,14 +571,14 @@
             document.querySelectorAll('.navbar-history a').forEach(link => {
                 link.addEventListener('click', function (e) {
                     e.preventDefault();
-
+        
                     // Remove active class from all links
                     document.querySelectorAll('.navbar-history a').forEach(nav => nav.classList.remove('active'));
                     this.classList.add('active');
-
+        
                     // Hide all tab contents
                     document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
-
+        
                     // Show the selected tab content
                     const targetId = this.getAttribute('href').substring(1);
                     const targetElement = document.getElementById(targetId);
@@ -590,39 +590,63 @@
                 });
             });
         });
-
+        
         function buyAgain(productId) {
             window.location.href = `/detail-product/${productId}`;
         }
-
+        
         function cancel(productId) {
             fetch('/cancel-order', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': '{{ csrf_token }}' // Pastikan CSRF token disertakan jika diperlukan
+                    'X-CSRFToken': '{{ csrf_token }}' // Ensure CSRF token is included if needed
                 },
                 body: JSON.stringify({
                     'product_id': productId
                 })
             })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.result === 'success') {
-                        // Ubah status produk di halaman tanpa reload
-                        document.getElementById(`status-${productId}`).innerText = 'Canceled';
-                        alert('Pesanan berhasil dibatalkan.');
+            .then(response => response.json())
+            .then(data => {
+                if (data.result === 'success') {
+                    const statusElement = document.getElementById(`status-${productId}`);
+                    if (statusElement) {
+                        statusElement.innerText = 'Canceled';
                     } else {
-                        alert('Gagal membatalkan pesanan: ' + data.message);
+                        console.warn(`Element with ID status-${productId} not found.`);
                     }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
+        
+                    Swal.fire({
+                        title: 'Success',
+                        text: 'Order has been successfully canceled.',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then(() => {
+                        window.location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'Failed to cancel order: ' + data.message,
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                
+                Swal.fire({
+                    title: 'Error',
+                    text: 'An error occurred while canceling the order. Please try again later.',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
                 });
-            window.location.reload();
+            });
         }
-
-        function selesai(productId) {
+        
+        
+            function selesai(productId) {
             fetch('/selesai-order', {
                 method: 'POST',
                 headers: {
@@ -744,8 +768,13 @@
                     .then(response => response.json())
                     .then(data => {
                         if (data.status === 'success') {
-                            alert('Ulasan berhasil ditambah! Terima kasih atas ulasanmu!')
-                            closeRatingModal();
+                            Swal.fire({
+                                title: 'Review added successfully!',
+                                text: "Thank you for your review!",
+                                icon: 'success'
+                            }).then(() => {
+                                closeRatingModal()
+                            }); 
                         } else {
                             alert('Failed to save the review: ' + data.message);
                             console.error(`Product ID : ${product_id}`);

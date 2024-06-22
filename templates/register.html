@@ -16,6 +16,8 @@
     <!-- jquery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+     <!-- SweetAlert2 -->
+     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- Logo Title -->
     <link rel="icon" href="../static/img/Logo.png" />
@@ -189,10 +191,20 @@
         for (const check of checks) {
           const element = $(check.id);
           if (element.hasClass('text-danger')) {
-            alert(`Please check your ${check.text}!`);
+            Swal.fire({
+              title: 'Error!',
+              text: `Please check your ${check.text}!`,
+              icon: 'error',
+              confirmButtonText: 'OK'
+            });
             return;
           } else if (!element.hasClass('text-success')) {
-            alert(`Please double check your ${check.text}!`);
+            Swal.fire({
+              title: 'Error!',
+              text: `Please double check your ${check.text}!`,
+              icon: 'error',
+              confirmButtonText: 'OK'
+            });
             return;
           }
         }
@@ -231,8 +243,22 @@
             password_give: password,
           },
           success: function (response) {
-            alert('You are signed up! Nice!');
-            window.location.replace('/login');
+            Swal.fire({
+              title: 'Success!',
+              text: 'Registration successful. Please log in.',
+              icon: 'success',
+              confirmButtonText: 'OK'
+            }).then(() => {
+              window.location.replace('/login');
+            });
+          },
+          error: function (xhr, status, error) {
+            Swal.fire({
+              title: 'Error!',
+              text: 'An error occurred during registration. Please try again later.',
+              icon: 'error',
+              confirmButtonText: 'OK'
+            });
           },
         });
       }

@@ -15,7 +15,8 @@
     <link
         href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400;1,500;1,600;1,700;1,800&display=swap"
         rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <!-- Logo Title -->
     <link rel="icon" href="../static/img/Logo.png">
     <title>Update Profile</title>
@@ -190,78 +191,47 @@
         }
 
         function update_profile() {
-            Swal.fire({
-                title: 'Update Profile',
-                text: 'Are you sure you want to update your profile?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, update it!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    let username = $('#input-username').val();
-                    let email = $('#input-email').val();
-                    let contact = $('#input-contact').val();
-                    let address = $('#input-address').val();
-                    let file = $('#input-pic')[0].files[0];
-                    let form_data = new FormData();
-        
-                    form_data.append('file_give', file);
-                    form_data.append('username_give', username);
-                    form_data.append('email_give', email);
-                    form_data.append('contact_give', contact);
-                    form_data.append('address_give', address);
-        
-                    $.ajax({
-                        type: 'POST',
-                        url: '/update_profile',
-                        data: form_data,
-                        cache: false,
-                        processData: false,
-                        contentType: false,
-                        success: function (response) {
-                            if (response['result'] === 'success') {
-                                // Tampilkan alert konfirmasi untuk menyimpan perubahan
-                                Swal.fire({
-                                    title: "Do you want to save the changes?",
-                                    showDenyButton: true,
-                                    showCancelButton: true,
-                                    confirmButtonText: "Save",
-                                    denyButtonText: `Don't save`
-                                }).then((result) => {
-                                    if (result.isConfirmed) {
-                                        // Pengguna memilih untuk menyimpan perubahan
-                                        Swal.fire("Saved!", "Your changes have been saved.", "success").then(() => {
-                                            // Redirect to home after clicking "OK"
-                                            window.location.href = "/";
-                                        });
-                                    } else if (result.isDenied) {
-                                        // Pengguna memilih untuk tidak menyimpan perubahan
-                                        Swal.fire("Changes are not saved", "", "info");
-                                    }
-                                });
-                            } else {
-                                // Update gagal, tampilkan alert error
-                                Swal.fire('Error!', 'Failed to update profile.', 'error');
-                            }
-                        },
-                        error: function () {
-                            // Kesalahan saat melakukan permintaan Ajax
-                            Swal.fire('Error!', 'Failed to update profile. Please try again later.', 'error');
-                        }
-                    });
+            let username = $('#input-username').val();
+            let email = $('#input-email').val();
+            let contact = $('#input-contact').val();
+            let address = $('#input-address').val();
+            let file = $('#input-pic')[0].files[0];
+            let form_data = new FormData();
+
+            form_data.append('file_give', file);
+            form_data.append('username_give', username);
+            form_data.append('email_give', email);
+            form_data.append('contact_give', contact);
+            form_data.append('address_give', address);
+
+            $.ajax({
+                type: 'POST',
+                url: '/update_profile',
+                data: form_data,
+                cache: false,
+                processData: false,
+                contentType: false,
+                success: function (response) {
+                    if (response['result'] === 'success') {
+                        alert(response['msg']);
+                        window.location.reload();
+                    }
                 }
-            });
+            })
         }
-        
-        
-       
+
 
         document.getElementById('update-profile-form').addEventListener('submit', function (event) {
             const inputPic = document.getElementById('input-pic');
             if (inputPic.files.length === 0) {
                 inputPic.disabled = true;
+                Swal.fire({
+                    title: 'Update uccess',
+                    text: 'Profile has been successfully updated.',
+                    icon: 'success',
+                }).then(() => {
+                    window.location.href = "/";
+                });
             }
         });
 

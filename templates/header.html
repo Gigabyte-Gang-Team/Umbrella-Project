@@ -75,7 +75,7 @@
                     <div class="user-text">Guest</div>
                     <img src="../static/img/profile_default.png" alt="Avatar Logo"
                         style="width: 40px; border: 1px solid var(--warna-utama)" class="rounded-pill"
-                        onclick="redirectToUpdatePage()" />
+                        onclick="showAlertNotLoggedIn('You need to login to view your profile')" />
                     <div class="vertical-line"></div>
                     {% endif %}
                 </a>
@@ -87,13 +87,25 @@
                 </a>
                 <ul class="dropdown-menu">
                     <li>
+                        {% if is_logged_in %}
                         <a class="dropdown-item" href="/update_profile"><i class="bi bi-person"></i> Profile</a>
+                        {% else %}
+                        <a class="dropdown-item" href="#" onclick="showAlertNotLoggedIn('You need to login to view your profile')"><i class="bi bi-person"></i> Profile</a>
+                        {% endif %}
                     </li>
                     <li>
+                        {% if is_logged_in %}
                         <a class="dropdown-item" href="/cart"><i class="bi bi-bag"></i> Cart</a>
+                        {% else %}
+                        <a class="dropdown-item" href="#" onclick="showAlertNotLoggedIn('You need to login to view your cart')"><i class="bi bi-bag"></i> Cart</a>
+                        {% endif %}
                     </li>
                     <li>
+                        {% if is_logged_in %}
                         <a class="dropdown-item" href="/history"><i class="bi bi-clock-history"></i> History</a>
+                        {% else %}
+                        <a class="dropdown-item" href="#" onclick="showAlertNotLoggedIn('You need to login to view your history')"><i class="bi bi-clock-history"></i> History</a>
+                        {% endif %}
                     </li>
                     <li>
                         <hr class="dropdown-divider" />
@@ -113,13 +125,28 @@
     </div>
 </nav>
 
+
 <script>
+    function showAlertNotLoggedIn(message) {
+        Swal.fire({
+            title: 'Not Logged In',
+            text: message,
+            icon: 'warning',
+            confirmButtonColor: '#3085d6',
+            confirmButtonText: 'Login'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "/login";
+            }
+        });
+    }
+    
     function redirectToUpdatePage() {
         window.location.href = "/update_profile";
     }
-    document.getElementById("logout-button").addEventListener("click", confirmLogout);
+    
     function confirmLogout(event) {
-        event.preventDefault(); // Mencegah tautan default untuk dijalankan
+        event.preventDefault();
         Swal.fire({
             title: 'Logout Confirmation',
             text: "Are you sure you want to logout?",
@@ -136,12 +163,12 @@
                     text: "You've successfully logged out. See you next time!",
                     icon: 'success'
                 }).then(() => {
-                    window.location.href = "/logout"; // Redirect to logout page
+                    window.location.href = "/logout";
                 });
             }
         });
     }
-
+    
 
 </script>
 <!-- End Header -->
