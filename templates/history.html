@@ -324,7 +324,7 @@
                                 <img src="{{ transaction.image_product }}" alt="{{ transaction.name_product }}">
                                 <div class="actions">
                                     {% if transaction.status_product == "On Process" %}
-                                    <button class="buy-again"
+                                    <button class="buy-again mx-4"
                                         style="background-color: red; color: white; cursor: pointer;"
                                         onclick="cancel('{{ transaction.product_id }}')" value="Canceled">
                                         <i class="material-icons me-1 fs-4">&#xe5c9;</i>
@@ -517,8 +517,7 @@
                             <div class="product-container">
                                 <img src="{{ transaction.image_product }}" alt="{{ transaction.name_product }}">
                                 <div class="actions">
-                                    <button class="buy-again hidden-button"
-                                        style="cursor: pointer;" onclick=""
+                                    <button class="buy-again hidden-button" style="cursor: pointer;" onclick=""
                                         value="Delivered">
                                         <i class="fa fa-check-square-o me-2" style="font-size:20px"></i>
                                         Pesanan Selesai
