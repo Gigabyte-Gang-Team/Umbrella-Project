@@ -5,7 +5,7 @@
         function checkFileCount(event) {
             var input = event.target;
             if (input.files.length > 9) {
-                alert("Hanya maksimal 9 file yang diizinkan.");
+                Swal.fire("You are only allowed a maximum of 9 files.");
                 input.value = ''; // Hapus file-file yang dipilih yang melebihi batas
             }
         }

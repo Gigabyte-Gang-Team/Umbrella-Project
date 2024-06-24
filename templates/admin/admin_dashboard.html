@@ -121,8 +121,14 @@
           console.log('Data received from server:', data);
 
           if (data.success) {
-            alert('Order status updated successfully!');
-            location.reload();
+            Swal.fire({
+              title: "Update Success!",
+              text: "Order status updated successfully!",
+              icon: "success"
+            }).then(() => {
+              location.reload();
+            });
+            
 
             closeModal();
           } else {
